@@ -20,8 +20,10 @@
       >
         <a
           class="platform-title"
+          style="font-size:15px;"
           @click="goShow"
-        >船舰AI感知部署平台</a>
+        >船舰AI感知部署平台
+      </a>
       </div>
     </div>
     <el-divider content-position="center">
@@ -40,20 +42,24 @@
         class="iconfont icon-mubiaojiance"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-mubiaojiance" />目标超低空海面检测
+        <i class="iconfont icon-mubiaojiance" /> 目标超低空海面检测 
       </h3>
     </el-menu-item>
 
-    <el-menu-item
+    <!-- <el-menu-item
       index="/detectchanges"
       @click="goDetectChanges"
+    > -->
+    <el-menu-item
+      index="/location"
+      @click="goLocation"
     >
       <i
         v-show="isCollapse"
         class="iconfont icon-bianhuajiance"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-bianhuajiance" />目标自主识别与定位
+        <i class="iconfont icon-bianhuajiance" />目标关键部位识别与定位
       </h3>
     </el-menu-item>
 
@@ -113,7 +119,7 @@
       <span
         v-show="!isCollapse"
         class="divider-title"
-      >历史记录</span>
+      >个人空间</span>
     </el-divider>
 
     <el-menu-item
@@ -125,7 +131,7 @@
         class="iconfont icon-history"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-history" />我的历史记录
+        <i class="iconfont icon-history" />我的个人空间
       </h3>
     </el-menu-item>
 
@@ -144,6 +150,7 @@ import {
   goDetectObjects,
   goSegmentation,
   goClassification,
+  goLocation,
   goRestoreImgs,
   goHistory,
   goOnlineMap
@@ -164,6 +171,7 @@ export default {
     goDetectObjects,
     goSegmentation,
     goClassification,
+    goLocation,
     goRestoreImgs,
     goHistory,
     goOnlineMap,

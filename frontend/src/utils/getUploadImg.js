@@ -25,7 +25,7 @@ function goCompress(type,num) {
 }
 
 function upload(type,funUrl) {
-
+  
   if (this.fileList.length === 0) {
     this.$message.error("请上传图片！");
   } else {
@@ -45,10 +45,16 @@ function upload(type,funUrl) {
           this.imgArr = res.data.data["imgArr"].forEach((item)=>{
             item['before_img'] = global.BASEURL+item['before_img']
             item['after_img'] = global.BASEURL+item['after_img']
-          })
-          this.imgArr = res.data.data["imgArr"]
-          this.isUpload = this.imgArr.length !== 0
-          this.tableData = res.data.data["tableData"]
+          });
+          this.imgArr = res.data.data["imgArr"];
+          this.isUpload = this.imgArr.length !== 0;
+          this.tableData = res.data.data["tableData"];
+          this.outArr = res.data.data["outArr"].forEach((item)=>{
+            item['out_main_img'] = global.BASEURL+item['out_main_img']
+            item['out_side_img'] = global.BASEURL+item['out_side_img']
+          });
+          this.outArr = res.data.data["outArr"]
+          console.log(this.outArr)
           // this.getMore()
         });
       if (this.uploadSrc.list.length >= 10 && type!=='场景分类') {
@@ -57,10 +63,10 @@ function upload(type,funUrl) {
           cancelButtonText: "取消",
           type: "warning",
         })
-            .then(() => {
-              showFullScreenLoading('#load','压缩中')
-              this.goCompress(type,this.uploadSrc.list.length)
-            }).catch(() => {
+          .then(() => {
+            showFullScreenLoading('#load','压缩中')
+            this.goCompress(type,this.uploadSrc.list.length)
+          }).catch(() => {
 
         })
       }

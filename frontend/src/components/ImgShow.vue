@@ -25,7 +25,7 @@
           />
          
           <div class="img-infor">
-            <span>原图</span>
+            <span id="myspan1">原图</span>
           </div>
         </div>
         <div>
@@ -40,7 +40,7 @@
               :preview-teleported="true"
             />
             <div class="img-infor">
-              <span>预测结果</span>
+              <span id="myspan2">预测结果</span>
               <span
                 @click="
                   downloadimgWithWords(
@@ -75,28 +75,21 @@ export default {
       default(){
         return []
       }
-    },
+    }
   },
   data() {
     return {
       fit: "fill",
-      childImgArr:[]
+      childImgArr:[],
     };
   },
   mounted() {
     this.childImgArr = this.imgArr
-    // console.log(this.childImgArr)
+    // console.log(this.funtype)
   },
   updated() {
-    console.log("updated")
     this.childImgArr = this.imgArr
-    // this.childImgArr.forEach((item,index)=>{
-    //   for (const key in item) {
-    //     console.log(typeof(item[key]))
-    //     console.log("item[key]",item[key]);//值
-    //     // console.log("key",key);//键
-    //   }
-    // })
+
   },
   methods: {
     downloadimgWithWords,

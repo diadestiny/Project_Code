@@ -5,7 +5,7 @@
         <div
           id="sub-title"
         >
-          变化检测<i
+          低光图像增强<i
             class="iconfont icon-dianji"
           />
         </div>
@@ -27,9 +27,10 @@
       <i
         class="iconfont icon-zhuyi"
       />注意，请将属于<span class="go-bold">同一组</span>的图片设置<span class="go-bold">相同</span>的命名，这将成为我们处理一组图片的依据
-    </p><p>
-      <i class="iconfont icon-zidingyi" />自定义模型文件请上传至<span class="go-bold">backend/model文件夹</span><i class="iconfont icon-wenjianjia" />下的<span class="go-bold">change_detection文件夹</span>
     </p>
+    <!-- <p>
+      <i class="iconfont icon-zidingyi" />自定义模型文件请上传至<span class="go-bold">backend/model文件夹</span><i class="iconfont icon-wenjianjia" />下的<span class="go-bold">change_detection文件夹</span>
+    </p> -->
     <el-card style="border: 4px dashed var(--el-border-color);position: relative">
       <div
         v-if="fileList1.length||fileList2.length"

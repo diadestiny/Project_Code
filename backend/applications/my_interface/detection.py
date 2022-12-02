@@ -1,7 +1,7 @@
 import mmcv
 import numpy as np
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]  = '7'
+os.environ["CUDA_VISIBLE_DEVICES"]  = '0'
 from mmdet.datasets.api_wrappers import COCO
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 import cv2

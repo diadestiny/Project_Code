@@ -142,7 +142,8 @@
         @child-refresh="getMore"
       />
     </el-dialog>
-    <ImgShow :img-arr="imgArr" />
+    <ImgShow1
+      :img-arr = "imgArr"/>
     <el-table
     :data="tableData"
     height="300"
@@ -171,7 +172,7 @@
 import {createSrc, imgUpload,getCustomModel} from "@/api/upload";
 import {historyGetPage} from "@/api/history";
 import {upload} from "@/utils/getUploadImg";
-import ImgShow from '@/components/ImgShow'
+import ImgShow1 from '@/components/ImgShow1'
 import Tabinfor from "@/components/Tabinfor";
 import Bottominfor from "@/components/Bottominfor";
 import MyVueCropper from "@/components/MyVueCropper";
@@ -182,7 +183,7 @@ export default {
     Tabinfor,
     Bottominfor,
     MyVueCropper,
-    ImgShow
+    ImgShow1
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -198,7 +199,7 @@ export default {
       file: {},
       isNotCut: true,
       cutVisible: false,
-      funtype: "场景分类",
+      funtype: "孪生分类",
       scrollTop: "",
       fit: "fill",
       fileList: [],

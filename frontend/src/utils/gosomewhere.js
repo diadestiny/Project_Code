@@ -25,6 +25,13 @@ function goClassification() {
     } else this.$router.push("classification");
 }
 
+function goLocation() {
+    this.isNavigator = false
+    if (this.$route.path === "/location") {
+        this.$message.success('您已经在该界面了哦')
+    } else this.$router.push("location");
+}
+
 function goRestoreImgs() {
     this.isNavigator = false;
     if (this.$route.path === "/restoreimgs") {
@@ -46,4 +53,4 @@ function goHistory() {
 
         });
 }
-export { goDetectChanges, goDetectObjects, goSegmentation,goClassification,goRestoreImgs,goOnlineMap,goHistory }
+export { goDetectChanges, goDetectObjects, goSegmentation,goClassification,goRestoreImgs,goOnlineMap,goLocation,goHistory }
