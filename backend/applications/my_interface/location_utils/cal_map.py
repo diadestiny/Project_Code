@@ -273,7 +273,7 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
     # close the plot
     plt.close()
 
-def get_map(MINOVERLAP, draw_plot, score_threhold=0.5, path = './map_out'):
+def get_map(MINOVERLAP, draw_plot, image_id_name,score_threhold=0.5, path = './map_out'):
     GT_PATH             = os.path.join(path, 'ground-truth')
     DR_PATH             = os.path.join(path, 'detection-results')
     IMG_PATH            = os.path.join(path, 'images-optional')
@@ -307,7 +307,9 @@ def get_map(MINOVERLAP, draw_plot, score_threhold=0.5, path = './map_out'):
     if show_animation:
         os.makedirs(os.path.join(RESULTS_FILES_PATH, "images", "detections_one_by_one"))
 
-    ground_truth_files_list = glob.glob(GT_PATH + '/*.txt')
+    # ground_truth_files_list = glob.glob(GT_PATH + '/*.txt')
+    ground_truth_files_list = [GT_PATH+ '/'+image_id_name +".txt"]
+    print(ground_truth_files_list)
     if len(ground_truth_files_list) == 0:
         error("Error: No ground-truth files found!")
     ground_truth_files_list.sort()
@@ -381,7 +383,8 @@ def get_map(MINOVERLAP, draw_plot, score_threhold=0.5, path = './map_out'):
     gt_classes  = sorted(gt_classes)
     n_classes   = len(gt_classes)
 
-    dr_files_list = glob.glob(DR_PATH + '/*.txt')
+    # dr_files_list = glob.glob(DR_PATH + '/*.txt')
+    dr_files_list = [DR_PATH+ '/'+image_id_name +".txt"]
     dr_files_list.sort()
     for class_index, class_name in enumerate(gt_classes):
         bounding_boxes = []
@@ -795,7 +798,7 @@ def get_map(MINOVERLAP, draw_plot, score_threhold=0.5, path = './map_out'):
             plot_color,
             ""
             )
-    return mAP
+    return mAP,ap_dictionary
 
 def preprocess_gt(gt_path, class_names):
     image_ids   = os.listdir(gt_path)

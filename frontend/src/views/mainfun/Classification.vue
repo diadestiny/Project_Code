@@ -3,7 +3,7 @@
     <Tabinfor>
       <template #left>
         <div id="sub-title">
-        目标精确毁伤评估<i class="iconfont icon-dianji"/>
+        关键部位快速精确毁伤评估<i class="iconfont icon-dianji"/>
         </div>
       </template>
     </Tabinfor>
@@ -142,8 +142,17 @@
         @child-refresh="getMore"
       />
     </el-dialog>
-    <ImgShow1
+    <classification_imgShow
       :img-arr = "imgArr"/>
+    <Tabinfor>
+      <template #left>
+        <div id="sub-title"> 相关毁伤评估信息<i class="iconfont icon-dianji"/> </div>
+      </template>
+      <template #right>
+          <div id="sub-title"> 原图宽高尺寸：{{size}} </div>
+      </template>
+    </Tabinfor>
+    <el-divider />
     <el-table
     :data="tableData"
     height="300"
@@ -164,6 +173,11 @@
       label="置信度"
       width="100">
     </el-table-column>
+    <el-table-column
+      prop="time"
+      label="推理时间(单位:毫秒)"
+      width="100">
+    </el-table-column>
   </el-table>
     <Bottominfor />
   </div>
@@ -172,7 +186,7 @@
 import {createSrc, imgUpload,getCustomModel} from "@/api/upload";
 import {historyGetPage} from "@/api/history";
 import {upload} from "@/utils/getUploadImg";
-import ImgShow1 from '@/components/ImgShow1'
+import classification_imgShow from '@/components/classification_imgShow'
 import Tabinfor from "@/components/Tabinfor";
 import Bottominfor from "@/components/Bottominfor";
 import MyVueCropper from "@/components/MyVueCropper";
@@ -183,7 +197,7 @@ export default {
     Tabinfor,
     Bottominfor,
     MyVueCropper,
-    ImgShow1
+    classification_imgShow
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -209,11 +223,13 @@ export default {
       },
       modelPathArr:[],
       imgArr:[],
-      tableData: []
+      tableData: [],
+      size: "",
     };
   },
   updated() {
-    // // console.log("object detection page")
+    // console.log("这是updated函数的内容");
+    console.log(this.imgArr);
     // this.tableData.forEach((item,index)=>{
     //   for (const key in item) {
     //     console.log(typeof(item[key]))
@@ -221,6 +237,9 @@ export default {
     //     // console.log("key",key);//键
     //   }
     // })
+  },
+  mounted() {
+    // console.log("这是mounted函数的内容");
   },
   watch:{
     uploadSrc:{
@@ -255,7 +274,7 @@ export default {
       this.fileList = [];
     },
     getMore() {
-      this.getUploadImg("场景分类");
+      this.getUploadImg("孪生分类");
     },
     uploadMore() {
       this.beforeUpload(...this.$refs.uploadFile.files)

@@ -3,7 +3,7 @@
       <Tabinfor>
         <template #left>
           <div id="sub-title">
-            目标关键部位识别与定位<i class="iconfont icon-dianji"/>
+            目标关键部位自主识别与定位<i class="iconfont icon-dianji"/>
           </div>
         </template>
       </Tabinfor>
@@ -146,13 +146,80 @@
         :img-arr = "imgArr"/>
       <location_out_imgShow
         :img-arr = "outArr"/>
-        <Tabinfor>
+    <Tabinfor>
       <template #left>
-        <div id="sub-title"> 相关检测定位信息<i class="iconfont icon-dianji"/> </div>
+        <div id="sub-title"> 单视角相关检测定位信息<i class="iconfont icon-dianji"/> </div>
+      </template>
+      <template #right>
+          <div id="sub-title"> 原图宽高尺寸：{{size }} </div>
       </template>
     </Tabinfor>
-    <el-divider />
 
+    <el-divider />
+    <el-table
+    :data="side_tableData"
+    height="300"
+    border
+    style="width: 100%">
+    <el-table-column
+      prop="id"
+      label="ID"
+      width="50">
+    </el-table-column>
+    <el-table-column
+      prop="class"
+      label="类别"
+      width="80">
+    </el-table-column>
+    <el-table-column
+      prop="bbox"
+      label="目标位置(x1,y1,x2,y2)"
+      width="250">
+    </el-table-column>
+    <el-table-column
+      prop="size"
+      label="目标尺寸(宽x高)"
+      width="250">
+    </el-table-column>
+    <el-table-column
+      prop="score"
+      label="置信度"
+      width="100">
+    </el-table-column>
+    <el-table-column
+      prop="time"
+      label="推理时间(单位:毫秒)"
+      width="100">
+    </el-table-column>
+    </el-table>
+    <el-divider />
+    <el-table
+    :data="side_tableAP"
+    height="300"
+    border
+    style="width: 100%">
+    <el-table-column
+      prop="class"
+      label="类别"
+      width="80">
+    </el-table-column>
+    <el-table-column
+      prop="ap"
+      label="平均精度AP"
+      width="150">
+    </el-table-column>
+    </el-table>
+
+    <Tabinfor>
+      <template #left>
+        <div id="sub-title"> 多视角相关检测定位信息<i class="iconfont icon-dianji"/> </div>
+      </template>
+      <template #right>
+          <div id="sub-title"> 原图宽高尺寸：{{size }} </div>
+      </template>
+    </Tabinfor>
+
+    <el-divider />
     <el-table
     :data="tableData"
     height="300"
@@ -174,12 +241,38 @@
       width="250">
     </el-table-column>
     <el-table-column
+      prop="size"
+      label="目标尺寸(宽x高)"
+      width="250">
+    </el-table-column>
+    <el-table-column
       prop="score"
       label="置信度"
       width="100">
     </el-table-column>
-  </el-table>
-
+    <el-table-column
+      prop="time"
+      label="推理时间(单位:毫秒)"
+      width="100">
+    </el-table-column>
+    </el-table>
+    <el-divider />
+    <el-table
+    :data="tableAP"
+    height="300"
+    border
+    style="width: 100%">
+    <el-table-column
+      prop="class"
+      label="类别"
+      width="80">
+    </el-table-column>
+    <el-table-column
+      prop="ap"
+      label="平均精度AP"
+      width="150">
+    </el-table-column>
+    </el-table>
      <Bottominfor />
     </div>
   </template>
@@ -216,7 +309,7 @@
         file: {},
         isNotCut: true,
         cutVisible: false,
-        funtype: "孪生分类",
+        funtype: "目标定位",
         scrollTop: "",
         fit: "fill",
         fileList: [],
@@ -226,11 +319,15 @@
         },
         modelPathArr:[],
         imgArr:[],
+        outArr:[],
         tableData: [],
-        outArr:[]
+        tableAP:[],
+        side_tableAP:[],
+        size: "",
       };
     },
     updated() {
+      
     //   // console.log("object detection page")
     //   this.tableData.forEach((item,index)=>{
     //     for (const key in item) {
@@ -273,7 +370,7 @@
         this.fileList = [];
       },
       getMore() {
-        this.getUploadImg("场景分类");
+        this.getUploadImg("目标定位");
       },
       uploadMore() {
         this.beforeUpload(...this.$refs.uploadFile.files)

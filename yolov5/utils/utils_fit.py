@@ -32,7 +32,7 @@ def fit_one_epoch(model_train, model, ema, yolo_loss, loss_history, eval_callbac
             #----------------------#
             #   前向传播
             #----------------------#
-            outputs         = model_train(images,side_images)
+            outputs         = model_train(images)
 
             loss_value_all  = 0
             #----------------------#
@@ -54,7 +54,7 @@ def fit_one_epoch(model_train, model, ema, yolo_loss, loss_history, eval_callbac
                 #----------------------#
                 #   前向传播
                 #----------------------#
-                outputs         = model_train(images,y=side_images)
+                outputs         = model_train(images)
 
                 loss_value_all  = 0
                 #----------------------#
@@ -109,7 +109,7 @@ def fit_one_epoch(model_train, model, ema, yolo_loss, loss_history, eval_callbac
             #----------------------#
             #   前向传播
             #----------------------#
-            outputs         = model_train_eval(images,y=side_images)
+            outputs         = model_train_eval(images)
 
             loss_value_all  = 0
             #----------------------#

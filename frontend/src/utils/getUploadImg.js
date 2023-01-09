@@ -49,12 +49,18 @@ function upload(type,funUrl) {
           this.imgArr = res.data.data["imgArr"];
           this.isUpload = this.imgArr.length !== 0;
           this.tableData = res.data.data["tableData"];
-          this.outArr = res.data.data["outArr"].forEach((item)=>{
-            item['out_main_img'] = global.BASEURL+item['out_main_img']
-            item['out_side_img'] = global.BASEURL+item['out_side_img']
-          });
-          this.outArr = res.data.data["outArr"]
-          console.log(this.outArr)
+          this.tableAP = res.data.data["tableAP"];
+          this.size = res.data.data["size"];
+          if(type=="目标定位"){
+            this.outArr = res.data.data["outArr"].forEach((item)=>{
+              item['out_main_img'] = global.BASEURL+item['out_main_img']
+              item['out_side_img'] = global.BASEURL+item['out_side_img']
+            });
+            this.outArr = res.data.data["outArr"];
+            this.side_tableData = res.data.data["side_tableData"];
+            this.side_tableAP = res.data.data["side_tableAP"];
+            // console.log(this.outArr)
+          }
           // this.getMore()
         });
       if (this.uploadSrc.list.length >= 10 && type!=='场景分类') {

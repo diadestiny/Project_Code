@@ -5,6 +5,7 @@ const DetectChanges = () => import('@/views/mainfun/DetectChanges.vue')
 const DetectObjects = () => import('@/views/mainfun/DetectObjects.vue')
 const Segmentation = () => import('@/views/mainfun/Segmentation.vue')
 const Classification = ()=> import('@/views/mainfun/Classification.vue')
+const Situation = ()=> import('@/views/mainfun/Situation.vue')
 const Location = ()=> import('@/views/mainfun/Location.vue')
 const RestoreImgs = ()=> import('@/views/mainfun/RestoreImgs.vue')
 const OnlineMap = () => import('@/views/mainfun/OnlineMap.vue')
@@ -39,6 +40,11 @@ const routes = [
         path: '/classification',
         name:'Classification',
         component:Classification
+      },
+      {
+        path: '/situation',
+        name:'Situation',
+        component:Situation,
       },
       {
         path: '/location',

@@ -218,7 +218,7 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
-    save_dir            = 'logs'
+    save_dir            = 'single_logs'
     #------------------------------------------------------------------#
     #   eval_flag       是否在训练时进行评估，评估对象为验证集
     #                   安装pycocotools库后，评估体验更佳。
@@ -300,10 +300,10 @@ if __name__ == "__main__":
         for k, v in pretrained_dict.items():
             if k in model_dict.keys() and np.shape(model_dict[k]) == np.shape(v):
                 temp_dict[k] = v
-                if 'backbone' in k:
-                    tk = k.replace('backbone','side_backbone')
-                    temp_dict[tk] = v
-                    load_key.append(tk)
+                # if 'backbone' in k:
+                #     tk = k.replace('backbone','side_backbone')
+                #     temp_dict[tk] = v
+                #     load_key.append(tk)
                 load_key.append(k)
             else:
                 no_load_key.append(k)

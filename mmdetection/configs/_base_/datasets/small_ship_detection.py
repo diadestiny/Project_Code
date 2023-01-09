@@ -1,5 +1,5 @@
 dataset_type = 'SmallShip2COCODataset'
-data_root = '/data1/lkh/dataset/small_ship_dataset/'
+data_root = '/data1/lkh/dataset/DOTA/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -35,17 +35,17 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'train.json',
-        img_prefix=data_root + 'JPEGImages/',
+        ann_file=data_root + 'DOTA_trainval1024.json',
+        img_prefix=data_root + 'images/',
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'val.json',
-        img_prefix=data_root + 'JPEGImages/',
+        ann_file=data_root + 'DOTA_val1024.json',
+        img_prefix=data_root + 'val_images/',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'val.json',
-        img_prefix=data_root + 'JPEGImages/',
+        ann_file=data_root + 'DOTA_val1024.json',
+        img_prefix=data_root + 'val_images/',
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='bbox')

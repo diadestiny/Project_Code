@@ -21,11 +21,11 @@ class YoloBody(nn.Module):
         #   初始的基本通道是64
         #-----------------------------------------------#
         self.backbone       = CSPDarknet(base_channels, base_depth, phi, pretrained)
-        self.side_backbone = CSPDarknet(base_channels, base_depth, phi, pretrained)
+        # self.side_backbone = CSPDarknet(base_channels, base_depth, phi, pretrained)
 
-        self.t_conv1 = Conv(512, 256, 1, 1)
-        self.t_conv2 = Conv(1024, 512, 1, 1)
-        self.t_conv3 = Conv(2048, 1024, 1, 1)
+        # self.t_conv1 = Conv(512, 256, 1, 1)
+        # self.t_conv2 = Conv(1024, 512, 1, 1)
+        # self.t_conv3 = Conv(2048, 1024, 1, 1)
             
         self.upsample   = nn.Upsample(scale_factor=2, mode="nearest")
 
@@ -48,18 +48,17 @@ class YoloBody(nn.Module):
         # 20, 20, 1024 => 20, 20, 3 * (5 + num_classes) => 20, 20, 3 * (4 + 1 + num_classes)
         self.yolo_head_P5 = nn.Conv2d(base_channels * 16, len(anchors_mask[0]) * (5 + num_classes), 1)
 
-    def forward(self, x,y):
+    def forward(self, x):
         #  backbone
         feat1, feat2, feat3 = self.backbone(x)
-        side_feat1,side_feat2,side_feat3 = self.side_backbone(y)
+        # side_feat1,side_feat2,side_feat3 = self.side_backbone(y)
 
-        f1 = torch.cat([feat1, side_feat1], 1)
-        f2 = torch.cat([feat2, side_feat2], 1)
-        f3 = torch.cat([feat3, side_feat3], 1)
-        feat1 = feat1 + self.t_conv1(f1)
-        feat2 = feat2 + self.t_conv2(f2)
-        feat3 = feat3 + self.t_conv3(f3)
-
+        # f1 = torch.cat([feat1, side_feat1], 1)
+        # f2 = torch.cat([feat2, side_feat2], 1)
+        # f3 = torch.cat([feat3, side_feat3], 1)
+        # feat1 = feat1 + self.t_conv1(f1)
+        # feat2 = feat2 + self.t_conv2(f2)
+        # feat3 = feat3 + self.t_conv3(f3)
         # 20, 20, 1024 -> 20, 20, 512
         P5          = self.conv_for_feat3(feat3)
         # 20, 20, 512 -> 40, 40, 512

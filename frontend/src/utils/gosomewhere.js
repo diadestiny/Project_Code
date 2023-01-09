@@ -45,6 +45,13 @@ function goOnlineMap(){
         this.$message.success('您已经在该界面了哦')
     } else this.$router.push("onlinemap");
 }
+
+function goSituation() {
+    this.isNavigator = false;
+    if (this.$route.path === "/situation") {
+        this.$message.success('您已经在该界面了哦')
+    } else this.$router.push("situation");
+}
 function goHistory() {
     if (this.$route.path === "/history") { this.$message.success('您已经在该界面了哦') }
     else
@@ -53,4 +60,4 @@ function goHistory() {
 
         });
 }
-export { goDetectChanges, goDetectObjects, goSegmentation,goClassification,goRestoreImgs,goOnlineMap,goLocation,goHistory }
+export { goDetectChanges, goDetectObjects, goSegmentation,goClassification,goRestoreImgs,goOnlineMap,goLocation,goSituation,goHistory }

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask import current_app
 import os
-import uuid
+import time
 # from applications.common.utils import upload as type_utils,upload_curd
 from applications.common.utils.http import fail_api
 from applications.extensions.init_upload import photos
@@ -28,14 +28,15 @@ def upload_api():
             return jsonify(res)
         elif type_ == "孪生分类":
             for i in range(0,len(photos_),2):
-                file_url1 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_before/'+ photos_[i].filename
-                file_url2 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_after/'+ photos_[i+1].filename
+                timestamp = str(time.time()).split(".")[0]
+                file_url1 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_before/'+ photos_[i].filename[:-4]+timestamp+photos_[i].filename[-4:]
+                file_url2 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_after/'+ photos_[i+1].filename[:-4]+timestamp+photos_[i].filename[-4:]
                 if os.path.exists(file_url1):
                     os.remove(file_url1)
                 if os.path.exists(file_url2):
                     os.remove(file_url2)
-                photos.save(photos_[i], folder = 'classification_before',name=photos_[i].filename[:-4] + ".")
-                photos.save(photos_[i+1], folder = 'classification_after',name=photos_[i+1].filename[:-4] + ".")
+                photos.save(photos_[i], folder = 'classification_before',name=photos_[i].filename[:-4]+timestamp+ ".")
+                photos.save(photos_[i+1], folder = 'classification_after',name=photos_[i+1].filename[:-4]+timestamp+ ".")
                 
                 data.append({
                     "src": file_url1,

@@ -161,6 +161,7 @@ class YOLO(object):
             top_label   = np.array(results[0][:, 6], dtype = 'int32')
             top_conf    = results[0][:, 4] * results[0][:, 5]
             top_boxes   = results[0][:, :4]
+
         #---------------------------------------------------------#
         #   设置字体与边框厚度
         #---------------------------------------------------------#
@@ -368,7 +369,7 @@ class YOLO(object):
 
         print('Onnx model save as {}'.format(model_path))
 
-    def get_map_txt(self, image_id, image, class_names, map_out_path):
+    def get_map_txt(self, image_id, image, class_names, map_out_path,side_image):
         f = open(os.path.join(map_out_path, "detection-results/"+image_id+".txt"), "w", encoding='utf-8') 
         image_shape = np.array(np.shape(image)[0:2])
         #---------------------------------------------------------#
@@ -376,24 +377,29 @@ class YOLO(object):
         #   代码仅仅支持RGB图像的预测，所有其它类型的图像都会转化成RGB
         #---------------------------------------------------------#
         image       = cvtColor(image)
+        side_image = cvtColor(side_image)
         #---------------------------------------------------------#
         #   给图像增加灰条，实现不失真的resize
         #   也可以直接resize进行识别
         #---------------------------------------------------------#
         image_data  = resize_image(image, (self.input_shape[1], self.input_shape[0]), self.letterbox_image)
+        side_image_data = resize_image(side_image, (self.input_shape[1], self.input_shape[0]), self.letterbox_image)
         #---------------------------------------------------------#
         #   添加上batch_size维度
         #---------------------------------------------------------#
         image_data  = np.expand_dims(np.transpose(preprocess_input(np.array(image_data, dtype='float32')), (2, 0, 1)), 0)
+        side_image_data  = np.expand_dims(np.transpose(preprocess_input(np.array(side_image_data, dtype='float32')), (2, 0, 1)), 0)
 
         with torch.no_grad():
             images = torch.from_numpy(image_data)
+            side_images = torch.from_numpy(side_image_data)
             if self.cuda:
                 images = images.cuda()
+                side_images = side_images.cuda()
             #---------------------------------------------------------#
             #   将图像输入网络当中进行预测！
             #---------------------------------------------------------#
-            outputs = self.net(images)
+            outputs = self.net(images,side_images)
             outputs = self.bbox_util.decode_box(outputs)
             #---------------------------------------------------------#
             #   将预测框进行堆叠，然后进行非极大抑制

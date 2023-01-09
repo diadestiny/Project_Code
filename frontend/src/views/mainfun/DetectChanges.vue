@@ -13,7 +13,7 @@
     </Tabinfor>
     <el-divider />
     <p>
-      请上传包含<span class="go-bold">图片的文件夹</span><i
+      请上传相关<span class="go-bold">图片的文件夹</span><i
         class="iconfont icon-wenjianjia"
       />或者<span
         class="go-bold"

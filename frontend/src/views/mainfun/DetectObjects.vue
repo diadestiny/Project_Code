@@ -3,13 +3,13 @@
     <Tabinfor>
       <template #left>
         <div id="sub-title">
-          目标超低空海面检测<i class="iconfont icon-dianji" />
+          海面目标超低空海面快速检测<i class="iconfont icon-dianji" />
         </div>
       </template>
     </Tabinfor>
     <el-divider />
     <p>
-      请上传包含<span class="go-bold">船舰图片的文件夹</span><i class="iconfont icon-wenjianjia" />或者<span
+      请上传<span class="go-bold">相关图片的文件夹</span><i class="iconfont icon-wenjianjia" />或者<span
         class="go-bold"
       >图片</span>
     </p>
@@ -250,6 +250,9 @@
       <template #left>
         <div id="sub-title"> 相关检测信息<i class="iconfont icon-dianji"/> </div>
       </template>
+      <template #right>
+          <div id="sub-title"> 原图宽高尺寸：{{size}} </div>
+      </template>
     </Tabinfor>
     <el-divider />
     <el-table
@@ -265,7 +268,7 @@
     <el-table-column
       prop="class"
       label="类别"
-      width="80">
+      width="120">
     </el-table-column>
     <el-table-column
       prop="bbox"
@@ -273,11 +276,38 @@
       width="250">
     </el-table-column>
     <el-table-column
+      prop="size"
+      label="目标尺寸(宽x高)"
+      width="250">
+    </el-table-column>
+    <el-table-column
       prop="score"
       label="置信度"
       width="100">
     </el-table-column>
-  </el-table>
+    <el-table-column
+      prop="time"
+      label="推理时间(单位:毫秒)"
+      width="100">
+    </el-table-column>
+    </el-table>
+    <el-divider />
+    <el-table
+    :data="tableAP"
+    height="300"
+    border
+    style="width: 100%">
+    <el-table-column
+      prop="class"
+      label="类别"
+      width="120">
+    </el-table-column>
+    <el-table-column
+      prop="ap"
+      label="平均精度AP"
+      width="150">
+    </el-table-column>
+    </el-table>
 
     <Bottominfor />
   </div>
@@ -320,7 +350,6 @@ export default {
       funtype: "目标检测",
       scrollTop: "",
       fit: "fill",
-      
       fileList: [],
       uploadSrc: {
         list: [],
@@ -336,10 +365,11 @@ export default {
       },
       imgArr:[],
       tableData: [],
+      tableAP:[],
+      size: "",
     };
   },
   updated() {
-    // console.log("object detection page")
     // this.tableData.forEach((item,index)=>{
     //   for (const key in item) {
     //     console.log(typeof(item[key]))
@@ -347,6 +377,8 @@ export default {
     //     // console.log("key",key);//键
     //   }
     // })
+  },
+  mounted() {
   },
   watch:{
     uploadSrc:{

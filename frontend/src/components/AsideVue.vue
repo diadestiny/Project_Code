@@ -22,7 +22,7 @@
           class="platform-title"
           style="font-size:15px;"
           @click="goShow"
-        >船舰AI感知部署平台
+        >FHM体系目标识别和态势推理演示平台
       </a>
       </div>
     </div>
@@ -42,7 +42,7 @@
         class="iconfont icon-mubiaojiance"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-mubiaojiance" /> 目标超低空海面检测 
+        <i class="iconfont icon-mubiaojiance" /> 海面目标超低空海面快速检测 
       </h3>
     </el-menu-item>
 
@@ -59,7 +59,7 @@
         class="iconfont icon-bianhuajiance"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-bianhuajiance" />目标关键部位识别与定位
+        <i class="iconfont icon-bianhuajiance" />目标关键部位自主识别与定位
       </h3>
     </el-menu-item>
 
@@ -72,7 +72,19 @@
         class="iconfont icon-erfenleibianhuajiance16px"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-erfenleibianhuajiance16px" />目标精确毁伤评估
+        <i class="iconfont icon-erfenleibianhuajiance16px" />关键部位快速精确毁伤评估
+      </h3>
+    </el-menu-item>
+      <el-menu-item
+      index="/situation"
+      @click="goSituation"
+    >
+      <i
+        v-show="isCollapse"
+        class="iconfont icon-erfenleibianhuajiance16px"
+      />
+      <h3 v-show="!isCollapse">
+        <i class="iconfont icon-changjingguanli" />知识和数据融合驱动态势预测
       </h3>
     </el-menu-item>
 
@@ -115,11 +127,11 @@
       </h3>
     </el-menu-item> -->
 
-    <el-divider content-position="center">
+    <!-- <el-divider content-position="center">
       <span
         v-show="!isCollapse"
         class="divider-title"
-      >个人空间</span>
+      >历史记录</span>
     </el-divider>
 
     <el-menu-item
@@ -131,9 +143,9 @@
         class="iconfont icon-history"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-history" />我的个人空间
+        <i class="iconfont icon-history" />我的历史记录
       </h3>
-    </el-menu-item>
+    </el-menu-item> -->
 
     <el-divider content-position="center">
       <span
@@ -153,7 +165,8 @@ import {
   goLocation,
   goRestoreImgs,
   goHistory,
-  goOnlineMap
+  goOnlineMap,
+  goSituation
 } from "@/utils/gosomewhere.js";
 export default {
   props: {
@@ -175,6 +188,7 @@ export default {
     goRestoreImgs,
     goHistory,
     goOnlineMap,
+    goSituation,
     goShow() {
       this.$message.success('欢迎来到本平台')
     }
@@ -229,7 +243,7 @@ export default {
   }
 }
 .el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 250px;
+  width: 300px;
   min-height: 400px;
 }
 

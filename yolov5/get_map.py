@@ -96,9 +96,11 @@ if __name__ == "__main__":
         for image_id in tqdm(image_ids):
             image_path  = os.path.join(VOCdevkit_path, "VOC2007/JPEGImages/cam1/"+image_id+".jpg")
             image       = Image.open(image_path)
+            side_image_path = os.path.join(VOCdevkit_path, "VOC2007/JPEGImages/cam2/"+image_id+".jpg")
+            side_image = Image.open(side_image_path)
             if map_vis:
                 image.save(os.path.join(map_out_path, "images-optional/" + image_id + ".jpg"))
-            yolo.get_map_txt(image_id, image, class_names, map_out_path)
+            yolo.get_map_txt(image_id, image, class_names, map_out_path,side_image)
         print("Get predict result done.")
         
     if map_mode == 0 or map_mode == 2:
@@ -120,7 +122,6 @@ if __name__ == "__main__":
                     top     = bndbox.find('ymin').text
                     right   = bndbox.find('xmax').text
                     bottom  = bndbox.find('ymax').text
-
                     if difficult_flag:
                         new_f.write("%s %s %s %s %s difficult\n" % (obj_name, left, top, right, bottom))
                     else:
@@ -129,10 +130,10 @@ if __name__ == "__main__":
 
     if map_mode == 0 or map_mode == 3:
         print("Get map.")
-        get_map(MINOVERLAP, True, score_threhold = score_threhold, path = map_out_path)
+        get_map(MINOVERLAP, False, score_threhold = score_threhold, path = map_out_path)
         print("Get map done.")
 
     if map_mode == 4:
         print("Get map.")
-        get_coco_map(class_names = class_names, path = map_out_path)
-        print("Get map done.")
+        print_stat = get_coco_map(class_names = class_names, path = map_out_path)
+        print(print_stat)

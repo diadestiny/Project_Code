@@ -17,35 +17,34 @@
             <el-image
               ref="tableTab"
               class="img-display"
-              :src="item.out_side_img"
+              :src="item.before_img"
               :fit="fit"
               :lazy="true"
-              :preview-src-list="[item.out_side_img]"
+              :preview-src-list="[item.before_img]"
               :preview-teleported="true"
             />
-           
             <div class="img-infor">
-              <span id="myspan1">单视角预测结果</span>
+              <span id="myspan1">原图</span>
             </div>
           </div>
           <div>
-            <div v-if="item.type!=='场景分类'">
+            <div v-if="item.type!=='孪生分类'">
               <el-image
                 ref="tableTab"
                 class="img-display"
-                :src="item.out_main_img"
+                :src="item.after_img"
                 :fit="fit"
                 :lazy="true"
-                :preview-src-list="[item.out_main_img]"
+                :preview-src-list="[item.after_img]"
                 :preview-teleported="true"
               />
               <div class="img-infor">
-                <span id="myspan2">多视角预测结果</span>
+                <span id="myspan2">损伤图像</span>
                 <span
                   @click="
                     downloadimgWithWords(
                       item.id,
-                      item.out_main_img,
+                      item.after_img,
                       `${item.type}结果图.png`
                     )
                   "
@@ -68,7 +67,7 @@
   import { downloadimgWithWords } from "@/utils/download.js";
   
   export default {
-    name: "Imgshow",
+    name: "classification_imgShow",
     props: {
       imgArr:{
         type:Array,
@@ -85,11 +84,9 @@
     },
     mounted() {
       this.childImgArr = this.imgArr
-      console.log(this.childImgArr)
     },
     updated() {
       this.childImgArr = this.imgArr
-      console.log(this.childImgArr)
     },
     methods: {
       downloadimgWithWords,

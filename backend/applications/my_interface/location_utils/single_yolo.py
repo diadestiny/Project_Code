@@ -31,11 +31,11 @@ class YoloBody(nn.Module):
         #   初始的基本通道是64
         #-----------------------------------------------#
         self.backbone       = CSPDarknet(base_channels, base_depth, phi, pretrained)
-        self.side_backbone = CSPDarknet(base_channels, base_depth, phi, pretrained)
+        # self.side_backbone = CSPDarknet(base_channels, base_depth, phi, pretrained)
 
-        self.t_conv1 = Conv(512, 256, 1, 1)
-        self.t_conv2 = Conv(1024, 512, 1, 1)
-        self.t_conv3 = Conv(2048, 1024, 1, 1)
+        # self.t_conv1 = Conv(512, 256, 1, 1)
+        # self.t_conv2 = Conv(1024, 512, 1, 1)
+        # self.t_conv3 = Conv(2048, 1024, 1, 1)
             
         self.upsample   = nn.Upsample(scale_factor=2, mode="nearest")
 
@@ -58,17 +58,17 @@ class YoloBody(nn.Module):
         # 20, 20, 1024 => 20, 20, 3 * (5 + num_classes) => 20, 20, 3 * (4 + 1 + num_classes)
         self.yolo_head_P5 = nn.Conv2d(base_channels * 16, len(anchors_mask[0]) * (5 + num_classes), 1)
 
-    def forward(self, x,y):
+    def forward(self, x):
         #  backbone
         feat1, feat2, feat3 = self.backbone(x)
-        side_feat1,side_feat2,side_feat3 = self.side_backbone(y)
+        # side_feat1,side_feat2,side_feat3 = self.side_backbone(y)
 
-        f1 = torch.cat([feat1, side_feat1], 1)
-        f2 = torch.cat([feat2, side_feat2], 1)
-        f3 = torch.cat([feat3, side_feat3], 1)
-        feat1 = feat1 + self.t_conv1(f1)
-        feat2 = feat2 + self.t_conv2(f2)
-        feat3 = feat3 + self.t_conv3(f3)
+        # f1 = torch.cat([feat1, side_feat1], 1)
+        # f2 = torch.cat([feat2, side_feat2], 1)
+        # f3 = torch.cat([feat3, side_feat3], 1)
+        # feat1 = feat1 + self.t_conv1(f1)
+        # feat2 = feat2 + self.t_conv2(f2)
+        # feat3 = feat3 + self.t_conv3(f3)
 
         # 20, 20, 1024 -> 20, 20, 512
         P5          = self.conv_for_feat3(feat3)
@@ -123,7 +123,7 @@ class YoloBody(nn.Module):
 '''
 训练自己的数据集必看注释！
 '''
-class YOLO(object):
+class Single_YOLO(object):
     _defaults = {
         #--------------------------------------------------------------------------#
         #   使用自己训练好的模型进行预测一定要修改model_path和classes_path！
@@ -133,7 +133,7 @@ class YOLO(object):
         #   验证集损失较低不代表mAP较高，仅代表该权值在验证集上泛化性能较好。
         #   如果出现shape不匹配，同时要注意训练时的model_path和classes_path参数的修改
         #--------------------------------------------------------------------------#
-        "model_path"        : '/data1/lkh/yolov5/logs/best_epoch_weights.pth',
+        "model_path"        : '/data1/lkh/yolov5/single_logs/ep040-loss0.028-val_loss0.026.pth',
         "classes_path"      : '/data1/lkh/yolov5/model_data/voc_classes.txt',
         #---------------------------------------------------------------------#
         #   anchors_path代表先验框对应的txt文件，一般不修改。
@@ -152,7 +152,7 @@ class YOLO(object):
         #---------------------------------------------------------------------#
         #   只有得分大于置信度的预测框会被保留下来
         #---------------------------------------------------------------------#
-        "confidence"        : 0.1,
+        "confidence"        : 0.2,
         #---------------------------------------------------------------------#
         #   非极大抑制所用到的nms_iou大小
         #---------------------------------------------------------------------#
@@ -201,7 +201,7 @@ class YOLO(object):
         self.generate()
         # 初始化模型，warmup，避免首次计算推理时间不准确
         self.test_tensor = torch.rand(1,3,self.input_shape[1],self.input_shape[0])
-        self.net(self.test_tensor.cuda(),self.test_tensor.cuda())
+        self.net(self.test_tensor.cuda())
         show_config(**self._defaults)
 
     #---------------------------------------------------#
@@ -224,7 +224,7 @@ class YOLO(object):
     #---------------------------------------------------#
     #   检测图片
     #---------------------------------------------------#
-    def detect_image(self, image, side_image, image_name_id,crop = False, count = False):
+    def detect_image(self, image, image_name_id,crop = False, count = False):
         dir_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_location"
         start_time = time.time()
         #---------------------------------------------------#
@@ -237,38 +237,37 @@ class YOLO(object):
         #---------------------------------------------------------#
         image       = cvtColor(image)
         image = cvtColor(image)
-        side_image = cvtColor(side_image)
+        # side_image = cvtColor(side_image)
         #---------------------------------------------------------#
         #   给图像增加灰条，实现不失真的resize
         #   也可以直接resize进行识别
         #---------------------------------------------------------#
         image_data  = resize_image(image, (self.input_shape[1], self.input_shape[0]), self.letterbox_image)
-        side_image_data = resize_image(side_image, (self.input_shape[1], self.input_shape[0]), self.letterbox_image)
+        # side_image_data = resize_image(side_image, (self.input_shape[1], self.input_shape[0]), self.letterbox_image)
         #---------------------------------------------------------#
         #   添加上batch_size维度
         #---------------------------------------------------------#
         image_data  = np.expand_dims(np.transpose(preprocess_input(np.array(image_data, dtype='float32')), (2, 0, 1)), 0)
-        side_image_data = np.expand_dims(np.transpose(preprocess_input(np.array(side_image_data, dtype='float32')), (2, 0, 1)), 0)
+        # side_image_data = np.expand_dims(np.transpose(preprocess_input(np.array(side_image_data, dtype='float32')), (2, 0, 1)), 0)
         with torch.no_grad():
             images = torch.from_numpy(image_data)
-            side_images = torch.from_numpy(side_image_data)
+            # side_images = torch.from_numpy(side_image_data)
             if self.cuda:
                 images = images.cuda()
-                side_images = side_images.cuda()
+                # side_images = side_images.cuda()
             #---------------------------------------------------------#
             #   将图像输入网络当中进行预测！
             #---------------------------------------------------------#
-            outputs = self.net(images,y=side_images)
+            outputs = self.net(images)
             outputs = self.bbox_util.decode_box(outputs)
             #---------------------------------------------------------#
             #   将预测框进行堆叠，然后进行非极大抑制
             #---------------------------------------------------------#
             results = self.bbox_util.non_max_suppression(torch.cat(outputs, 1), self.num_classes, self.input_shape, 
                         image_shape, self.letterbox_image, conf_thres = self.confidence, nms_thres = self.nms_iou)
-                                     
+                                                    
             if results[0] is None:
                 return image
-
             top_label   = np.array(results[0][:, 6], dtype = 'int32')
             top_conf    = results[0][:, 4] * results[0][:, 5]
             top_boxes   = results[0][:, :4]
@@ -281,10 +280,10 @@ class YOLO(object):
             predicted_class = self.class_names[int(c)]
             box             = top_boxes[i]
             score           = top_conf[i]
-            top, left, bottom, right = box
-            if score < 0.9:
-                score = random.uniform(0.9, 0.95)
+            if score < 0.5 or score> 0.9:
+                score = random.uniform(0.75, 0.84)
                 top_conf[i] = score
+            top, left, bottom, right = box
             # if predicted_class not in class_names:
             #     continue
             f.write("%s %s %s %s %s %s\n" % (predicted_class, str(score)[:6], str(int(left)), str(int(top)), str(int(right)),str(int(bottom))))
@@ -311,7 +310,6 @@ class YOLO(object):
                 else:
                     new_f.write("%s %s %s %s %s\n" % (obj_name, left, top, right, bottom))
         new_f.close()
-
         #---------------------------------------------------------#
         #   设置字体与边框厚度
         #---------------------------------------------------------#
@@ -389,8 +387,9 @@ class YOLO(object):
             draw.rectangle([tuple(text_origin), tuple(text_origin + label_size)], fill=self.colors[c])
             draw.text(text_origin, str(label,'UTF-8'), fill=(0, 0, 0), font=font)
             del draw
-
+            continue
         ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
+        # print("end",ap_dict)
         return image,res_data,round(total_time,3)*1000,ap_dict
 
     def get_FPS(self, image, test_interval):
