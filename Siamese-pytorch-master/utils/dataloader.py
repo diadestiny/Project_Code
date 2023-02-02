@@ -37,13 +37,14 @@ class SiameseDataset(Dataset):
     def __getitem__(self, index):
         annotation_path = self.train_lines[index]
         image = Image.open(annotation_path)
+        raw_path = ""
         if "easy" in annotation_path:
-            annotation_path = annotation_path.replace("easy","images")
+            raw_path = annotation_path.replace("easy","images")
         elif "mid" in annotation_path:
-            annotation_path = annotation_path.replace("mid", "images")
+            raw_path = annotation_path.replace("mid", "images")
         elif "hard" in annotation_path:
-            annotation_path = annotation_path.replace("hard", "images")
-        raw_image = Image.open(annotation_path)
+            raw_path = annotation_path.replace("hard", "images")
+        raw_image = Image.open(raw_path)
         # ------------------------------#
         #   读取图像并转换成RGB图像
         # ------------------------------#
@@ -58,6 +59,7 @@ class SiameseDataset(Dataset):
         image = np.transpose(preprocess_input(np.array(image).astype(np.float32)), [2, 0, 1])
         raw_image = np.transpose(preprocess_input(np.array(raw_image).astype(np.float32)), [2, 0, 1])
         y = int(self.train_labels[index])
+        # print(annotation_path,y)
         return raw_image,image, y
 
     def _convert_path_list_to_images_and_labels(self, path_list,class_list:list):

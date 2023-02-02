@@ -4,11 +4,17 @@ import torch
 import torch.backends.cudnn as cudnn
 from PIL import Image
 from applications.my_interface.siamese_utils.utils import letterbox_image, preprocess_input, cvtColor, show_config
+from applications.my_interface.siamese_utils.gram import GradCAM, show_cam_on_image,Init_Setting
 import torch.nn.functional as F
 import torch.nn as nn
 from applications.my_interface.siamese_utils.vgg import VGG16
 import time
 import random
+from torchviz import make_dot,make_dot_from_trace
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+import os
+
 #---------------------------------------------------#
 #   使用自己训练好的模型预测需要修改model_path参数
 #---------------------------------------------------#
@@ -19,7 +25,7 @@ class Siamese_config(object):
         #   使用自己训练好的模型进行预测一定要修改model_path
         #   model_path指向logs文件夹下的权值文件
         #-----------------------------------------------------#
-        "model_path"        : '/data1/lkh/Siamese-pytorch/logs/best_epoch_weights.pth',
+        "model_path"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/best_epoch_weights.pth',
         #-----------------------------------------------------#
         #   输入图片的大小。
         #-----------------------------------------------------#
@@ -65,9 +71,19 @@ class Siamese_config(object):
         #---------------------------#
         print('Loading weights into state dict...')
         device  = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        model   = Siamese(self.input_shape)
-        model.load_state_dict(torch.load(self.model_path, map_location=device))
-        self.net = model.eval()
+        self.model   = Siamese(self.input_shape)
+        self.heat_model = VGG16(True, 3)
+        model_dict = torch.load(self.model_path, map_location=device)
+        self.model.load_state_dict(model_dict)
+        temp_dict = {}
+        for k in model_dict.keys():
+            if "vgg" in k:
+                temp_dict[k.replace('vgg.','')]=model_dict[k]
+        missing_keys,unexpected_keys = self.heat_model.load_state_dict(temp_dict,strict=False)
+        # print("[missing_keys]:", *missing_keys, sep="\n")
+        # print("[unexpected_keys]:", *unexpected_keys, sep="\n")
+        
+        self.net = self.model.eval()
         # print('{} model loaded.'.format(self.model_path))
 
         if self.cuda:
@@ -93,7 +109,7 @@ class Siamese_config(object):
     #---------------------------------------------------#
     #   检测图片
     #---------------------------------------------------#
-    def detect_image(self, image_1, image_2):
+    def detect_image(self, image_1, image_2,heatmap_path):
         #---------------------------------------------------------#
         #   在这里将图像转换成RGB图像，防止灰度图在预测时报错。
         #---------------------------------------------------------#
@@ -107,18 +123,35 @@ class Siamese_config(object):
         image_2 = letterbox_image(image_2, [self.input_shape[1], self.input_shape[0]], self.letterbox_image)
         
         #---------------------------------------------------------#
+    
         #   归一化+添加上batch_size维度
         #---------------------------------------------------------#
         photo_1  = preprocess_input(np.array(image_1, np.float32))
         photo_2  = preprocess_input(np.array(image_2, np.float32))
 
+        copy_photo_1 = torch.from_numpy(np.expand_dims(np.transpose(photo_1, (2, 0, 1)), 0)).type(torch.FloatTensor)
+        # detach_photo_1= photo_1.detach()
+        # 加载热力图
+        test_model = self.heat_model.cuda().eval()
+        target_layers = [test_model.features[-1]]
+        cam = GradCAM(model=test_model, target_layers=target_layers)
+        target_category = None
+        grayscale_cam = cam(input_tensor=copy_photo_1.cuda(), target_category=target_category)
+        grayscale_cam = grayscale_cam[0, :]
+        visualization = show_cam_on_image(np.array(image_1) / 255.,
+                                        grayscale_cam,
+                                        use_rgb=True)
+        plt.imshow(visualization)
+        plt.xticks()
+        plt.yticks()
+        plt.axis('off')
+        plt.savefig(heatmap_path)
         with torch.no_grad():
             #---------------------------------------------------#
             #   添加上batch维度，才可以放入网络中预测
             #---------------------------------------------------#
             photo_1 = torch.from_numpy(np.expand_dims(np.transpose(photo_1, (2, 0, 1)), 0)).type(torch.FloatTensor)
             photo_2 = torch.from_numpy(np.expand_dims(np.transpose(photo_2, (2, 0, 1)), 0)).type(torch.FloatTensor)
-            
             if self.cuda:
                 photo_1 = photo_1.cuda()
                 photo_2 = photo_2.cuda()
@@ -186,12 +219,21 @@ class Siamese(nn.Module):
 
 
 model_config = Siamese_config()
+dir_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_show/"
+def generate_detction_network_pic(model,net_pic_name,w,h):
+    inp_tensor=torch.ones(size=(3,3,w,h),requires_grad=True)
+    out=model(inp_tensor)
+    graph=make_dot(out,params=dict(list(model.named_parameters()) + [('x', inp_tensor)]))  # 生成计算图结构表示
+    graph.render(filename=dir_path+net_pic_name,view=False,format='svg')  # 将源码写入文件，并对图结构进行渲染
+    drawing = svg2rlg(os.path.join(dir_path,net_pic_name+".svg"))
+    renderPM.drawToFile(drawing, os.path.join(dir_path,net_pic_name+".png"), fmt='PNG')
 
 def siamese_classification(image_1,image_2):
     image_1 = Image.open(image_1)
     image_2 = Image.open(image_2)
     start_time = time.time()
-    predict_class,probability = model_config.detect_image(image_1, image_2)
+    predict_class,probability = model_config.detect_image(image_1, image_2,"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap.png")
+    # generate_detction_network_pic(model_config.heat_model.cpu(),"cnn",image_1.size[0],image_1.size[1])
     torch.cuda.synchronize()
     end_time = time.time()
     total_time = round(end_time-start_time,3)*1000

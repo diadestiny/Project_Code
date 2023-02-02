@@ -81,15 +81,33 @@
                 </label>
               </p>
             </el-row>
-            <div class="handle-button">
-              <el-button
-                type="primary"
-                class="btn-animate btn-animate__shiny"
-                @click="upload('目标定位','location')"
-              >
+
+            <el-row
+              justify="center"
+              align="middle">
+            <el-col :span="12">
+              <div class="handle-button">
+                <el-button
+                  type="primary"
+                  class="btn-animate btn-animate__shiny"
+                  @click="upload('目标定位','location')"
+                >
                 开始处理
               </el-button>
             </div>
+            </el-col>
+            <el-col :span="12">
+                <div class="handle-button">
+                  <el-button
+                    type="primary"
+                    class="btn-animate btn-animate__shiny"
+                    @click="load_picture()">
+                    模型分析
+                  </el-button>
+                </div>
+              </el-col>
+              </el-row>
+
           </el-card>
         </el-col>
       </el-row>
@@ -146,6 +164,34 @@
         :img-arr = "imgArr"/>
       <location_out_imgShow
         :img-arr = "outArr"/>
+        <Tabinfor>
+        <template #left>
+          <div id="sub-title">
+            推理分析预览<i class="iconfont icon-dianji" />
+          </div>
+        </template>
+      </Tabinfor>
+      <el-divider />
+      <Tabinfor>
+        <template #left>
+          <p>
+            <span class="go-bold">点击图片</span>即可预览
+            <i
+              class="iconfont icon-duigou"
+            />
+            <span><span class="go-bold">滑轮滚动</span>即可放大缩小</span>
+          </p>
+        </template>
+        <template #right>
+          <span class="go-bold"><i
+            class="iconfont icon-shuaxin"
+            style="padding-right:55px"
+            @click="getMore"
+          ><span class="hidden-sm-and-down">点击刷新</span></i></span>
+        </template>
+      </Tabinfor>
+      <Analysis_Show
+      :img-arr = "analyse_img_list"/>
     <Tabinfor>
       <template #left>
         <div id="sub-title"> 单视角相关检测定位信息<i class="iconfont icon-dianji"/> </div>
@@ -285,7 +331,8 @@
   import Tabinfor from "@/components/Tabinfor";
   import Bottominfor from "@/components/Bottominfor";
   import MyVueCropper from "@/components/MyVueCropper";
-  
+  import Analysis_Show from "@/components/Analysis_Show";
+  import global from '@/global'
   export default {
     name: "Classification",
     components: {
@@ -293,7 +340,8 @@
       Bottominfor,
       MyVueCropper,
       location_raw_imgShow,
-      location_out_imgShow
+      location_out_imgShow,
+      Analysis_Show
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -324,6 +372,7 @@
         tableAP:[],
         side_tableAP:[],
         size: "",
+        analyse_img_list:[]
       };
     },
     updated() {
@@ -401,6 +450,15 @@
       },
       select() {
         this.isNotCut = this.$refs.cut.checked;
+      },
+      load_picture(){
+        this.analyse_img_list.push({
+                "id":1,
+                "type":"xxxx",
+                "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap.png",
+                "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/cnn.png",
+        });
+        // console.log(this.img_list);
       },
     },
   };

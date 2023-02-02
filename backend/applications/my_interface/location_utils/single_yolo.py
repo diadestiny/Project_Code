@@ -133,7 +133,7 @@ class Single_YOLO(object):
         #   验证集损失较低不代表mAP较高，仅代表该权值在验证集上泛化性能较好。
         #   如果出现shape不匹配，同时要注意训练时的model_path和classes_path参数的修改
         #--------------------------------------------------------------------------#
-        "model_path"        : '/data1/lkh/yolov5/single_logs/ep040-loss0.028-val_loss0.026.pth',
+        "model_path"        : '/data1/lkh/yolov5/new_single_logs/ep040-loss0.088-val_loss0.079.pth',
         "classes_path"      : '/data1/lkh/yolov5/model_data/voc_classes.txt',
         #---------------------------------------------------------------------#
         #   anchors_path代表先验框对应的txt文件，一般不修改。

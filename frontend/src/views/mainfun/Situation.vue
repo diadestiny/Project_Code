@@ -63,7 +63,7 @@
       <!-- <p>
         请上传包含<span class="go-bold">船舰图片的文件夹</span><i class="iconfont icon-wenjianjia" />或者<span class="go-bold">图片</span>
       </p> -->
-        <el-row >
+      <el-row >
           <el-col :span="12">
             <div class="handle-button">
               <el-button
@@ -159,7 +159,7 @@
       </el-table-column>
       <el-table-column
         prop="probability"
-        label="准确率"
+        label="置信度"
         width="100">
       </el-table-column>
       <el-table-column
@@ -349,9 +349,9 @@
       inference(){
         var action_list = ["预警机升空","预警机飞行","战斗机升空","战斗机飞行","预警机警戒","战斗机攻击"];
         var index = Math.round(Math.random()*(0-5) + 5);
-        console.log(index)
+        // console.log(index)
         var probability = (Math.random()*(80-96) + 96)/100;
-        console.log(probability.toFixed(3))
+        // console.log(probability.toFixed(3))
         var time = Math.round(Math.random()*(600-990) + 990);
         this.tableData=[];
         this.tableData.push({
@@ -360,7 +360,7 @@
                 "probability": probability.toFixed(3),
                 "time":time,
         })
-        console.log(this.tableData)
+        // console.log(this.tableData)
       }
     },
   };

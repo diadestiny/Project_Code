@@ -3,7 +3,7 @@
     <Tabinfor>
       <template #left>
         <div id="sub-title">
-          海面目标超低空海面快速检测<i class="iconfont icon-dianji" />
+          海面目标超低空快速识别<i class="iconfont icon-dianji" />
         </div>
       </template>
     </Tabinfor>
@@ -60,12 +60,11 @@
                 />
               </label>
             </p>
-          </el-row>
-         
+          </el-row>  
           <el-row
             justify="center"
             align="middle">
-          </el-row>
+            <el-col :span="12">
           <div class="handle-button">
             <el-button
               type="primary"
@@ -75,6 +74,19 @@
               开始处理
             </el-button>
           </div>
+         </el-col>
+         <el-col :span="12">
+            <div class="handle-button">
+              <el-button
+                type="primary"
+                class="btn-animate btn-animate__shiny"
+                @click="load_picture()">
+                模型分析
+              </el-button>
+            </div>
+          </el-col>
+          </el-row>
+          
           <el-divider v-if="!uploadSrc.prehandle" />
           <div v-if="uploadSrc.prehandle">
             <div v-if="uploadSrc.prehandle===2">
@@ -247,6 +259,35 @@
     <ImgShow
       :img-arr="imgArr"/>
     <Tabinfor>
+        <template #left>
+          <div id="sub-title">
+            推理分析预览<i class="iconfont icon-dianji" />
+          </div>
+        </template>
+      </Tabinfor>
+      <el-divider />
+      <Tabinfor>
+        <template #left>
+          <p>
+            <span class="go-bold">点击图片</span>即可预览
+            <i
+              class="iconfont icon-duigou"
+            />
+            <span><span class="go-bold">滑轮滚动</span>即可放大缩小</span>
+          </p>
+        </template>
+        <template #right>
+          <span class="go-bold"><i
+            class="iconfont icon-shuaxin"
+            style="padding-right:55px"
+            @click="getMore"
+          ><span class="hidden-sm-and-down">点击刷新</span></i></span>
+        </template>
+      </Tabinfor>
+      <Analysis_Show
+        :img-arr = "analyse_img_list"/>
+
+    <Tabinfor>
       <template #left>
         <div id="sub-title"> 相关检测信息<i class="iconfont icon-dianji"/> </div>
       </template>
@@ -320,13 +361,16 @@ import {historyGetPage} from "@/api/history";
 import {goCompress, upload} from "@/utils/getUploadImg";
 import {selectClahe, selectFilter, selectSharpen, selectSmooth,} from "@/utils/preHandle";
 import ImgShow from "@/components/ImgShow";
+import Analysis_Show from "@/components/Analysis_Show";
 import Tabinfor from "@/components/Tabinfor";
 import Bottominfor from "@/components/Bottominfor";
 import MyVueCropper from "@/components/MyVueCropper";
+import global from '@/global'
 export default {
   name: "Detectobjects",
   components: {
     ImgShow,
+    Analysis_Show,
     Tabinfor,
     Bottominfor,
     MyVueCropper,
@@ -367,6 +411,7 @@ export default {
       tableData: [],
       tableAP:[],
       size: "",
+      analyse_img_list:[]
     };
   },
   updated() {
@@ -448,7 +493,16 @@ export default {
     },
     select() {
       this.isNotCut = this.$refs.cut.checked;
-    }
+    },
+    load_picture(){
+        this.analyse_img_list.push({
+                "id":1,
+                "type":"目标检测",
+                "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap/heatmap3.png",
+                "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/cnn.png",
+        });
+        // console.log(this.img_list);
+      },
   },
 };
 </script>

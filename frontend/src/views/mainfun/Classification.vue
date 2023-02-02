@@ -81,15 +81,33 @@
               </label>
             </p>
           </el-row>
-          <div class="handle-button">
-            <el-button
-              type="primary"
-              class="btn-animate btn-animate__shiny"
-              @click="upload('孪生分类','classification')"
-            >
-              开始处理
-            </el-button>
-          </div>
+
+          <el-row
+            justify="center"
+            align="middle">
+            <el-col :span="12">
+              <div class="handle-button">
+                <el-button
+                  type="primary"
+                  class="btn-animate btn-animate__shiny"
+                  @click="upload('孪生分类','classification')"
+                >
+                  开始处理
+                </el-button>
+              </div>
+            </el-col>
+            <el-col :span="12">
+                <div class="handle-button">
+                  <el-button
+                    type="primary"
+                    class="btn-animate btn-animate__shiny"
+                    @click="load_picture()">
+                    模型分析
+                  </el-button>
+                </div>
+              </el-col>
+          </el-row>
+
         </el-card>
       </el-col>
     </el-row>
@@ -144,6 +162,36 @@
     </el-dialog>
     <classification_imgShow
       :img-arr = "imgArr"/>
+    
+    <Tabinfor>
+        <template #left>
+          <div id="sub-title">
+            推理分析预览<i class="iconfont icon-dianji" />
+          </div>
+        </template>
+      </Tabinfor>
+      <el-divider />
+      <Tabinfor>
+        <template #left>
+          <p>
+            <span class="go-bold">点击图片</span>即可预览
+            <i
+              class="iconfont icon-duigou"
+            />
+            <span><span class="go-bold">滑轮滚动</span>即可放大缩小</span>
+          </p>
+        </template>
+        <template #right>
+          <span class="go-bold"><i
+            class="iconfont icon-shuaxin"
+            style="padding-right:55px"
+            @click="getMore"
+          ><span class="hidden-sm-and-down">点击刷新</span></i></span>
+        </template>
+      </Tabinfor>
+      <Analysis_Show
+        :img-arr = "analyse_img_list"/>
+
     <Tabinfor>
       <template #left>
         <div id="sub-title"> 相关毁伤评估信息<i class="iconfont icon-dianji"/> </div>
@@ -187,17 +235,19 @@ import {createSrc, imgUpload,getCustomModel} from "@/api/upload";
 import {historyGetPage} from "@/api/history";
 import {upload} from "@/utils/getUploadImg";
 import classification_imgShow from '@/components/classification_imgShow'
+import Analysis_Show from "@/components/Analysis_Show";
 import Tabinfor from "@/components/Tabinfor";
 import Bottominfor from "@/components/Bottominfor";
 import MyVueCropper from "@/components/MyVueCropper";
-
+import global from '@/global'
 export default {
   name: "Classification",
   components: {
     Tabinfor,
     Bottominfor,
     MyVueCropper,
-    classification_imgShow
+    classification_imgShow,
+    Analysis_Show
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -225,6 +275,7 @@ export default {
       imgArr:[],
       tableData: [],
       size: "",
+      analyse_img_list:[],
     };
   },
   updated() {
@@ -306,6 +357,15 @@ export default {
     select() {
       this.isNotCut = this.$refs.cut.checked;
     },
+    load_picture(){
+        this.analyse_img_list.push({
+                "id":1,
+                "type":"xxxx",
+                "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap.png",
+                "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/cnn.png",
+        });
+        // console.log(this.img_list);
+      },
   },
 };
 </script>

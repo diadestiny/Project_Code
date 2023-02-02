@@ -14,6 +14,7 @@ from .utils import (cvtColor, get_anchors, get_classes, preprocess_input,
 from .utils_bbox import DecodeBox
 from .cal_map import get_map
 import random
+import cv2
 #---------------------------------------------------#
 #   yolo_body
 #---------------------------------------------------#
@@ -133,7 +134,7 @@ class YOLO(object):
         #   验证集损失较低不代表mAP较高，仅代表该权值在验证集上泛化性能较好。
         #   如果出现shape不匹配，同时要注意训练时的model_path和classes_path参数的修改
         #--------------------------------------------------------------------------#
-        "model_path"        : '/data1/lkh/yolov5/logs/best_epoch_weights.pth',
+        "model_path"        : '/data1/lkh/yolov5/new_pretrained_logs/best_epoch_weights.pth',
         "classes_path"      : '/data1/lkh/yolov5/model_data/voc_classes.txt',
         #---------------------------------------------------------------------#
         #   anchors_path代表先验框对应的txt文件，一般不修改。
@@ -224,7 +225,12 @@ class YOLO(object):
     #---------------------------------------------------#
     #   检测图片
     #---------------------------------------------------#
-    def detect_image(self, image, side_image, image_name_id,crop = False, count = False):
+    
+    def detect_image(self, image, side_image, image_name_id,crop = False, count = False,heatmap_save_path="/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap.png"):
+        import matplotlib.pyplot as plt
+        def sigmoid(x):
+            y = 1.0 / (1.0 + np.exp(-x))
+            return y
         dir_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_location"
         start_time = time.time()
         #---------------------------------------------------#
@@ -259,6 +265,26 @@ class YOLO(object):
             #   将图像输入网络当中进行预测！
             #---------------------------------------------------------#
             outputs = self.net(images,y=side_images)
+            plt.imshow(image, alpha=1)
+            plt.axis('off')
+            mask    = np.zeros((image.size[1], image.size[0]))
+            for sub_output in outputs:
+                sub_output = sub_output.cpu().numpy()
+                b, c, h, w = np.shape(sub_output)
+                sub_output = np.transpose(np.reshape(sub_output, [b, 3, -1, h, w]), [0, 3, 4, 1, 2])[0]
+                score      = np.max(sigmoid(sub_output[..., 4]), -1)
+                score      = cv2.resize(score, (image.size[0], image.size[1]))
+                normed_score    = (score * 255).astype('uint8')
+                mask            = np.maximum(mask, normed_score)
+                
+            plt.imshow(mask, alpha=0.5, interpolation='nearest', cmap="jet")
+
+            plt.axis('off')
+            plt.subplots_adjust(top=1, bottom=0, right=1,  left=0, hspace=0, wspace=0)
+            plt.margins(0, 0)
+            plt.savefig(heatmap_save_path, dpi=200, bbox_inches='tight', pad_inches = -0.1)
+            print("Save to the " + heatmap_save_path)
+            # plt.show()
             outputs = self.bbox_util.decode_box(outputs)
             #---------------------------------------------------------#
             #   将预测框进行堆叠，然后进行非极大抑制
@@ -391,6 +417,7 @@ class YOLO(object):
             del draw
 
         ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
+        print(ap_dict)
         return image,res_data,round(total_time,3)*1000,ap_dict
 
     def get_FPS(self, image, test_interval):
@@ -443,7 +470,7 @@ class YOLO(object):
         tact_time = (t2 - t1) / test_interval
         return tact_time
 
-    def detect_heatmap(self, image, heatmap_save_path):
+    def detect_heatmap(self, image, side_image, heatmap_save_path):
         import cv2
         import matplotlib.pyplot as plt
         def sigmoid(x):
@@ -454,24 +481,29 @@ class YOLO(object):
         #   代码仅仅支持RGB图像的预测，所有其它类型的图像都会转化成RGB
         #---------------------------------------------------------#
         image       = cvtColor(image)
+        side_image  = cvtColor(side_image)
         #---------------------------------------------------------#
         #   给图像增加灰条，实现不失真的resize
         #   也可以直接resize进行识别
         #---------------------------------------------------------#
         image_data  = resize_image(image, (self.input_shape[1],self.input_shape[0]), self.letterbox_image)
+        side_image_data = resize_image(side_image, (self.input_shape[1], self.input_shape[0]), self.letterbox_image)
         #---------------------------------------------------------#
         #   添加上batch_size维度
         #---------------------------------------------------------#
         image_data  = np.expand_dims(np.transpose(preprocess_input(np.array(image_data, dtype='float32')), (2, 0, 1)), 0)
+        side_image_data = np.expand_dims(np.transpose(preprocess_input(np.array(side_image_data, dtype='float32')), (2, 0, 1)), 0)
 
         with torch.no_grad():
             images = torch.from_numpy(image_data)
+            side_images = torch.from_numpy(side_image_data)
             if self.cuda:
                 images = images.cuda()
+                side_images = side_images.cuda()
             #---------------------------------------------------------#
             #   将图像输入网络当中进行预测！
             #---------------------------------------------------------#
-            outputs = self.net(images)
+            outputs = self.net(images,side_images)
         
         plt.imshow(image, alpha=1)
         plt.axis('off')
