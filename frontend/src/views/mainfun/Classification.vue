@@ -50,7 +50,7 @@
               只能上传一张或多张图片，请在下方上传文件夹
             </div>
           </el-upload>
-          <el-row justify="center">
+          <!-- <el-row justify="center">
             <input
               id="folder"
               ref="uploadFile"
@@ -64,9 +64,9 @@
               class="iconfont icon-wenjianshangchuan"
               @click="fileClick"
             >上传文件夹</i>
-          </el-row>
+          </el-row> -->
 
-          <el-row justify="center">
+          <!-- <el-row justify="center">
             <p>
               <label class="prehandle-label container">
                 <input
@@ -80,7 +80,7 @@
                 />
               </label>
             </p>
-          </el-row>
+          </el-row> -->
 
           <el-row
             justify="center"
@@ -189,7 +189,7 @@
           ><span class="hidden-sm-and-down">点击刷新</span></i></span>
         </template>
       </Tabinfor>
-      <Analysis_Show
+      <Analysis_Show_3
         :img-arr = "analyse_img_list"/>
 
     <Tabinfor>
@@ -201,32 +201,97 @@
       </template>
     </Tabinfor>
     <el-divider />
-    <el-table
-    :data="tableData"
-    height="300"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="id"
-      label="ID"
-      width="50">
-    </el-table-column>
-    <el-table-column
-      prop="predict_class"
-      label="预测损伤等级"
-      width="150">
-    </el-table-column>
-    <el-table-column
-      prop="probability"
-      label="置信度"
-      width="100">
-    </el-table-column>
-    <el-table-column
-      prop="time"
-      label="推理时间(单位:毫秒)"
-      width="100">
-    </el-table-column>
-  </el-table>
+    <el-row justify="center"
+      align="middle">
+      <el-col :span="8">
+        <el-table
+          :data="tableData"
+          height="200"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="50">
+          </el-table-column>
+          <el-table-column
+            prop="predict_class_1"
+            label="预测损伤等级"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="probability_1"
+            label="置信度"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="time_1"
+            label="推理时间(单位:毫秒)"
+            width="100">
+          </el-table-column>
+          </el-table>
+      </el-col>
+
+      <el-col :span="8">
+        <el-table
+          :data="tableData"
+          height="200"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="50">
+          </el-table-column>
+          <el-table-column
+            prop="predict_class_2"
+            label="预测损伤等级2"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="probability_2"
+            label="置信度"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="time_2"
+            label="推理时间(单位:毫秒)"
+            width="100">
+          </el-table-column>
+          </el-table>
+      </el-col>
+
+      <el-col :span="8">
+        <el-table
+          :data="tableData"
+          height="200"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="50">
+          </el-table-column>
+          <el-table-column
+            prop="predict_class_3"
+            label="预测损伤等级3"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="probability_3"
+            label="置信度"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="time_3"
+            label="推理时间(单位:毫秒)"
+            width="100">
+          </el-table-column>
+          </el-table>
+      </el-col>
+
+    </el-row>
+    
     <Bottominfor />
   </div>
 </template>
@@ -235,7 +300,7 @@ import {createSrc, imgUpload,getCustomModel} from "@/api/upload";
 import {historyGetPage} from "@/api/history";
 import {upload} from "@/utils/getUploadImg";
 import classification_imgShow from '@/components/classification_imgShow'
-import Analysis_Show from "@/components/Analysis_Show";
+import Analysis_Show_3 from "@/components/Analysis_Show_3";
 import Tabinfor from "@/components/Tabinfor";
 import Bottominfor from "@/components/Bottominfor";
 import MyVueCropper from "@/components/MyVueCropper";
@@ -247,7 +312,7 @@ export default {
     Bottominfor,
     MyVueCropper,
     classification_imgShow,
-    Analysis_Show
+    Analysis_Show_3
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -341,7 +406,7 @@ export default {
       document.querySelector("#folder").click();
     },
     beforeUpload(file) {
-      this.cutVisible = this.$refs.cut.checked;
+      // this.cutVisible = this.$refs.cut.checked;
       const fileSuffix = file.name.substring(file.name.lastIndexOf(".") + 1)
       const whiteList = ['jpg','jpeg','png','JPG','JPEG']
       if (whiteList.indexOf(fileSuffix) === -1) {
@@ -355,14 +420,19 @@ export default {
         this.fileimg = window.URL.createObjectURL(new Blob([file]));}
     },
     select() {
-      this.isNotCut = this.$refs.cut.checked;
+      // this.isNotCut = this.$refs.cut.checked;
     },
     load_picture(){
+        var split_name = this.imgArr[0]["before_img"].split('/')
+        var fname = split_name[split_name.length-1].replace("jpg","png")
+        this.analyse_img_list = []
         this.analyse_img_list.push({
                 "id":1,
                 "type":"xxxx",
-                "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap.png",
-                "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/cnn.png",
+                "heatmap1": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap_easy/heatmap_"+fname,
+                "heatmap2": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap_mid/heatmap_"+fname,
+                "heatmap3": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap_hard/heatmap_"+fname,
+                // "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/cnn.png",
         });
         // console.log(this.img_list);
       },

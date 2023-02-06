@@ -27,25 +27,47 @@ def upload_api():
             res = {"msg": "上传成功", "code": 0, "success": True, "data": data}
             return jsonify(res)
         elif type_ == "孪生分类":
-            for i in range(0,len(photos_),2):
-                timestamp = str(time.time()).split(".")[0]
-                file_url1 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_before/'+ photos_[i].filename[:-4]+timestamp+photos_[i].filename[-4:]
-                file_url2 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_after/'+ photos_[i+1].filename[:-4]+timestamp+photos_[i].filename[-4:]
-                if os.path.exists(file_url1):
-                    os.remove(file_url1)
-                if os.path.exists(file_url2):
-                    os.remove(file_url2)
-                photos.save(photos_[i], folder = 'classification_before',name=photos_[i].filename[:-4]+timestamp+ ".")
-                photos.save(photos_[i+1], folder = 'classification_after',name=photos_[i+1].filename[:-4]+timestamp+ ".")
-                
-                data.append({
-                    "src": file_url1,
-                    "filename": photos_[i].filename,
-                })
-                data.append({
-                    "src": file_url2,
-                    "filename":  photos_[i+1].filename,
-                })
+            if len(photos_) == 1:
+                    file_url1 = '/data1/lkh/Siamese-pytorch/datasets/warships/images/'+ photos_[0].filename
+                    file_url2 = '/data1/lkh/Siamese-pytorch/datasets/warships/easy/' + photos_[0].filename
+                    file_url3 = '/data1/lkh/Siamese-pytorch/datasets/warships/mid/'+ photos_[0].filename
+                    file_url4 = '/data1/lkh/Siamese-pytorch/datasets/warships/hard/' + photos_[0].filename
+                    data.append({
+                        "src": file_url1,
+                        "filename": photos_[0].filename,
+                    })
+                    data.append({
+                        "src": file_url2,
+                        "filename":  photos_[0].filename,
+                    })
+                    data.append({
+                        "src": file_url3,
+                        "filename": photos_[0].filename,
+                    })
+                    data.append({
+                        "src": file_url4,
+                        "filename":  photos_[0].filename,
+                    })
+            else:
+                for i in range(0,len(photos_),2):
+                    # timestamp = str(time.time()).split(".")[0]
+                    file_url1 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_before/'+ photos_[i].filename
+                    file_url2 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_after/'+ photos_[i+1].filename
+                    if os.path.exists(file_url1):
+                        os.remove(file_url1)
+                    if os.path.exists(file_url2):
+                        os.remove(file_url2)
+                    photos.save(photos_[i], folder = 'classification_before',name=photos_[i].filename[:-4]+ ".")
+                    photos.save(photos_[i+1], folder = 'classification_after',name=photos_[i+1].filename[:-4]+ ".")
+                    
+                    data.append({
+                        "src": file_url1,
+                        "filename": photos_[i].filename,
+                    })
+                    data.append({
+                        "src": file_url2,
+                        "filename":  photos_[i+1].filename,
+                    })
             res = {"msg": "上传成功", "code": 0, "success": True, "data": data}
             return jsonify(res)
         elif type_ == '目标定位':

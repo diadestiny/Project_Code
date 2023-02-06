@@ -49,7 +49,7 @@ def deteciton_demo(img_path):
     torch.cuda.synchronize()
     end_time = time.time()
     # print(start_time,end_time)
-    model.show_result(img, result, out_file=out_file+name,show=True,score_thr=0.5,bbox_color=(255, 0, 0))
+    model.show_result(img, result, out_file=out_file+name,show=True,score_thr=0.5,bbox_color=[(255, 0, 0),(0,0,255),(0,0,255),(0,0,255)])
     bboxes = np.vstack(result)
     labels = [
         np.full(bbox.shape[0], i, dtype=np.int32)
@@ -106,7 +106,7 @@ def deteciton_demo(img_path):
             top     = bndbox.find('ymin').text
             right   = bndbox.find('xmax').text
             bottom  = bndbox.find('ymax').text
-            print(left,top)
+            # print(left,top)
             if difficult_flag:
                 new_f.write("%s %s %s %s %s difficult\n" % (obj_name, left, top, right, bottom))
             else:

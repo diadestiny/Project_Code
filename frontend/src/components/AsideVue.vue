@@ -42,7 +42,7 @@
         class="iconfont icon-mubiaojiance"
       />
       <h3 v-show="!isCollapse">
-        <i class="iconfont icon-mubiaojiance" /> 海面目标超低空快速识别 
+        <i class="iconfont icon-mubiaojiance" /> 海面远距目标精确识别 
       </h3>
     </el-menu-item>
 

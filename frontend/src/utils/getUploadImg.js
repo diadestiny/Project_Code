@@ -31,6 +31,7 @@ function upload(type,funUrl) {
   } else {
     let formData = new FormData();
     let _this = this;
+    console.log(this.fileList)
     for (const item of this.fileList) {
       formData.append("files", item) || formData.append('files', item.raw);
       formData.append("type", type);
@@ -42,10 +43,19 @@ function upload(type,funUrl) {
         this.imgUpload(this.uploadSrc,funUrl).then((res) => {
           this.fileList = []
           this.$message.success("上传成功！");
-          this.imgArr = res.data.data["imgArr"].forEach((item)=>{
-            item['before_img'] = global.BASEURL+item['before_img']
-            item['after_img'] = global.BASEURL+item['after_img']
-          });
+          if(type == "孪生分类"){
+            this.imgArr = res.data.data["imgArr"].forEach((item)=>{
+              item['before_img'] = global.BASEURL+item['before_img']
+              item['after_img_1'] = global.BASEURL+item['after_img_1']
+              item['after_img_2'] = global.BASEURL+item['after_img_2']
+              item['after_img_3'] = global.BASEURL+item['after_img_3']
+            });
+          }else{
+            this.imgArr = res.data.data["imgArr"].forEach((item)=>{
+              item['before_img'] = global.BASEURL+item['before_img']
+              item['after_img'] = global.BASEURL+item['after_img']
+            });
+          }
           this.imgArr = res.data.data["imgArr"];
           this.isUpload = this.imgArr.length !== 0;
           this.tableData = res.data.data["tableData"];

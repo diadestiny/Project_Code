@@ -226,7 +226,7 @@ class YOLO(object):
     #   检测图片
     #---------------------------------------------------#
     
-    def detect_image(self, image, side_image, image_name_id,crop = False, count = False,heatmap_save_path="/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap.png"):
+    def detect_image(self, image, side_image, image_name_id,crop = False, count = False,heatmap_save_path="/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/"):
         import matplotlib.pyplot as plt
         def sigmoid(x):
             y = 1.0 / (1.0 + np.exp(-x))
@@ -265,6 +265,7 @@ class YOLO(object):
             #   将图像输入网络当中进行预测！
             #---------------------------------------------------------#
             outputs = self.net(images,y=side_images)
+            plt.clf()
             plt.imshow(image, alpha=1)
             plt.axis('off')
             mask    = np.zeros((image.size[1], image.size[0]))
@@ -282,8 +283,8 @@ class YOLO(object):
             plt.axis('off')
             plt.subplots_adjust(top=1, bottom=0, right=1,  left=0, hspace=0, wspace=0)
             plt.margins(0, 0)
-            plt.savefig(heatmap_save_path, dpi=200, bbox_inches='tight', pad_inches = -0.1)
-            print("Save to the " + heatmap_save_path)
+            plt.savefig(heatmap_save_path+"heatmap_"+image_name_id+".png", dpi=200, bbox_inches='tight', pad_inches = -0.1)
+            # print("Save to the " + heatmap_save_path)
             # plt.show()
             outputs = self.bbox_util.decode_box(outputs)
             #---------------------------------------------------------#

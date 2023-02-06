@@ -17,49 +17,50 @@
           <el-image
             ref="tableTab"
             class="img-display"
-            :src="item.heatmap"
+            :src="item.heatmap1"
             :fit="fit"
             :lazy="true"
-            :preview-src-list="[item.heatmap]"
+            :preview-src-list="[item.heatmap1]"
             :preview-teleported="true"
           />
          
           <div class="img-infor">
-            <span id="myspan1">热力图</span>
+            <span id="myspan1">热力图1</span>
           </div>
         </div>
 
-        <!-- <div>
-          <div v-if="item.type!==' '">
-            <el-image
-              ref="tableTab"
-              class="img-display"
-              :src="item.netmap"
-              :fit="fit"
-              :lazy="true"
-              :preview-src-list="[item.netmap]"
-              :preview-teleported="true"
-              />
-              <div class="img-infor">
-                <span id="myspan2">网络推理图</span>
-                <span
-                  @click="
-                    downloadimgWithWords(
-                      item.id,
-                      item.netmap,
-                      `${item.type}结果图.png`
-                    )
-                  "
-                ><i class="iconfont icon-xiazai" /></span>
-              </div>
+        <div>
+          <el-image
+            ref="tableTab"
+            class="img-display"
+            :src="item.heatmap2"
+            :fit="fit"
+            :lazy="true"
+            :preview-src-list="[item.heatmap2]"
+            :preview-teleported="true"
+          />
+         
+          <div class="img-infor">
+            <span id="myspan1">热力图2</span>
           </div>
-            <div
-              v-else
-              class="img-index"
-            >
-            <span class="index-number ">{{ Object.keys(item.data)[0] }}: {{ item.data[Object.keys(item.data)] }}</span>
+        </div>
+
+        <div>
+          <el-image
+            ref="tableTab"
+            class="img-display"
+            :src="item.heatmap3"
+            :fit="fit"
+            :lazy="true"
+            :preview-src-list="[item.heatmap3]"
+            :preview-teleported="true"
+          />
+         
+          <div class="img-infor">
+            <span id="myspan1">热力图3</span>
           </div>
-        </div> -->
+        </div>
+
       </div>
     </div>
   </el-card>
@@ -69,7 +70,7 @@
 import { downloadimgWithWords } from "@/utils/download.js";
 
 export default {
-  name: "Analysis_Show",
+  name: "Analysis_Show_3",
   props: {
     imgArr:{
       type:Array,

@@ -110,10 +110,12 @@ class Siamese_config(object):
     #   检测图片
     #---------------------------------------------------#
     def detect_image(self, image_1, image_2,heatmap_path):
+        print(heatmap_path)
         #---------------------------------------------------------#
         #   在这里将图像转换成RGB图像，防止灰度图在预测时报错。
         #---------------------------------------------------------#
         image_1 = cvtColor(image_1)
+        copy_image_1 = image_1.copy()
         image_2 = cvtColor(image_2)
         
         #---------------------------------------------------#
@@ -129,7 +131,8 @@ class Siamese_config(object):
         photo_1  = preprocess_input(np.array(image_1, np.float32))
         photo_2  = preprocess_input(np.array(image_2, np.float32))
 
-        copy_photo_1 = torch.from_numpy(np.expand_dims(np.transpose(photo_1, (2, 0, 1)), 0)).type(torch.FloatTensor)
+        copy_photo_1  = preprocess_input(np.array(copy_image_1, np.float32))
+        copy_photo_1 = torch.from_numpy(np.expand_dims(np.transpose(copy_photo_1, (2, 0, 1)), 0)).type(torch.FloatTensor)
         # detach_photo_1= photo_1.detach()
         # 加载热力图
         test_model = self.heat_model.cuda().eval()
@@ -138,14 +141,15 @@ class Siamese_config(object):
         target_category = None
         grayscale_cam = cam(input_tensor=copy_photo_1.cuda(), target_category=target_category)
         grayscale_cam = grayscale_cam[0, :]
-        visualization = show_cam_on_image(np.array(image_1) / 255.,
+        visualization = show_cam_on_image(np.array(copy_image_1) / 255.,
                                         grayscale_cam,
                                         use_rgb=True)
-        plt.imshow(visualization)
-        plt.xticks()
-        plt.yticks()
+        plt.clf()
+        plt.imshow(visualization, alpha=1)
         plt.axis('off')
-        plt.savefig(heatmap_path)
+        plt.subplots_adjust(top=1, bottom=0, right=1,  left=0, hspace=0, wspace=0)
+        plt.margins(0, 0)
+        plt.savefig(heatmap_path, dpi=200, bbox_inches='tight', pad_inches = -0.1)
         with torch.no_grad():
             #---------------------------------------------------#
             #   添加上batch维度，才可以放入网络中预测
@@ -229,10 +233,20 @@ def generate_detction_network_pic(model,net_pic_name,w,h):
     renderPM.drawToFile(drawing, os.path.join(dir_path,net_pic_name+".png"), fmt='PNG')
 
 def siamese_classification(image_1,image_2):
+    image_name_id = image_1.split("/")[-1][:-4]
+    temp_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap/heatmap_"
+    if "easy" in image_2:
+        temp_path = temp_path.replace('/heatmap/','/heatmap_easy/')
+    elif "mid" in image_2:
+        temp_path = temp_path.replace('/heatmap/','/heatmap_mid/')
+    elif "hard" in image_2:
+        temp_path = temp_path.replace('/heatmap/','/heatmap_hard/')
     image_1 = Image.open(image_1)
     image_2 = Image.open(image_2)
     start_time = time.time()
-    predict_class,probability = model_config.detect_image(image_1, image_2,"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap.png")
+    
+    
+    predict_class,probability = model_config.detect_image(image_1, image_2,temp_path+image_name_id)
     # generate_detction_network_pic(model_config.heat_model.cpu(),"cnn",image_1.size[0],image_1.size[1])
     torch.cuda.synchronize()
     end_time = time.time()

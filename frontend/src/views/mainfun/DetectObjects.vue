@@ -3,7 +3,7 @@
     <Tabinfor>
       <template #left>
         <div id="sub-title">
-          海面目标超低空快速识别<i class="iconfont icon-dianji" />
+          海面远距目标精确识别<i class="iconfont icon-dianji" />
         </div>
       </template>
     </Tabinfor>
@@ -44,8 +44,11 @@
             <div class="el-upload__text">
               将文件拖到此处，或<em>点击上传</em>
             </div>
+            <div class="el-upload__tip">
+               只能上传一张或多张图片，请在下方上传文件夹
+            </div>
           </el-upload>
-          <el-row justify="center">
+          <!-- <el-row justify="center">
             <p>
               <label class="prehandle-label container">
                 <input
@@ -60,7 +63,7 @@
                 />
               </label>
             </p>
-          </el-row>  
+          </el-row>   -->
           <el-row
             justify="center"
             align="middle">
@@ -87,116 +90,7 @@
           </el-col>
           </el-row>
           
-          <el-divider v-if="!uploadSrc.prehandle" />
-          <div v-if="uploadSrc.prehandle">
-            <div v-if="uploadSrc.prehandle===2">
-              <div
-                id="sub-title"
-              >
-                CLAHE处理结果预览<i
-                  class="iconfont icon-dianji"
-                />
-              </div>   
-            </div>
-            <div v-else-if="uploadSrc.prehandle===4">
-              <div
-                id="sub-title"
-              >
-                锐化处理结果预览<i
-                  class="iconfont icon-dianji"
-                />
-              </div>   
-            </div>
-            <el-divider />
-            <el-row
-              justify="center"
-              :gutter="20"
-            >
-              <el-col
-                :xs="24"
-                :sm="24"
-                :md="6"
-                :lg="6"
-                :xl="6"
-              >
-                <div
-                  v-for="(item,index) in before"
-                  :key="index"
-                >
-                  <el-image
-                    :src="item"
-                    :preview-src-list="[item]"
-                    :preview-teleported="true"
-                  /><div class="handle-words">
-                    原图
-                  </div>
-                </div>
-              </el-col>
-              <el-col
-                :md="2"
-                :lg="2"
-                :xl="2"
-              />
-              <el-col
-                v-if="uploadSrc.prehandle===2"
-                :xs="24"
-                :sm="24"
-                :md="6"
-                :lg="6"
-                :xl="6"
-              >
-                <div
-                  v-for="(item,index) in claheImg"
-                  :key="index"
-                >
-                  <el-image
-                    :src="item"
-                    :preview-src-list="[item]"
-                    :preview-teleported="true"
-                  /><div class="handle-words">
-                    CLAHE处理后       <span
-                      @click="
-                        downloadimgWithWords(
-                          -1,
-                          item,
-                          `CLAHE处理图.png`
-                        )
-                      "
-                    ><i class="iconfont icon-xiazai" /></span>
-                  </div>
-                </div>
-              </el-col>
-              <el-col
-                v-if="uploadSrc.prehandle===4"
-                :xs="24"
-                :sm="24"
-                :md="6"
-                :lg="6"
-                :xl="6"
-              >
-                <div
-                  v-for="(item,index) in sharpenImg"
-                  :key="index"
-                >
-                  <el-image
-                    :src="item"
-                    :preview-src-list="[item]"
-                    :preview-teleported="true"
-                  /><div class="handle-words">
-                    锐化处理后      <span
-                      @click="
-                        downloadimgWithWords(
-                          -1,
-                          item,
-                          `锐化处理图.png`
-                        )
-                      "
-                    ><i class="iconfont icon-xiazai" /></span>
-                  </div>
-                </div>
-              </el-col>
-            </el-row>
-          </div>
+          <!-- <el-divider v-if="!uploadSrc.prehandle" /> -->
         </el-card>
       </el-col>
     </el-row>
@@ -345,11 +239,27 @@
     </el-table-column>
     <el-table-column
       prop="ap"
-      label="平均精度AP"
+      label="平均预测准确率"
       width="150">
     </el-table-column>
     </el-table>
-
+    <Tabinfor>
+      <template #left>
+        <div id="sub-title"> 模型架构图<i class="iconfont icon-dianji"/> </div>
+      </template>
+    </Tabinfor>
+    <el-divider />
+    <div>
+      <el-image
+        ref="tableTab"
+        class="img-display"
+        :src="networksrc"
+        :fit="fit"
+        :lazy="true"
+        :preview-src-list="[networksrc]"
+        :preview-teleported="true"
+      />
+    </div>
     <Bottominfor />
   </div>
 </template>
@@ -394,6 +304,7 @@ export default {
       funtype: "目标检测",
       scrollTop: "",
       fit: "fill",
+      networksrc:"",
       fileList: [],
       uploadSrc: {
         list: [],
@@ -434,7 +345,9 @@ export default {
       immediate:true
     }
   },
-  created() {},
+  created() {
+    this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/network.png"
+  },
   methods: {
     getImgArrayBuffer,
     atchDownload,
@@ -477,7 +390,7 @@ export default {
       document.querySelector("#folder").click();
     },
     beforeUpload(file) {
-        this.cutVisible = this.$refs.cut.checked;
+        // this.cutVisible = this.$refs.cut.checked;
         const fileSuffix = file.name.substring(file.name.lastIndexOf(".") + 1)
         const whiteList = ['jpg','jpeg','png','JPG','JPEG']
         if (whiteList.indexOf(fileSuffix) === -1) {
@@ -492,15 +405,19 @@ export default {
       }
     },
     select() {
-      this.isNotCut = this.$refs.cut.checked;
+      // this.isNotCut = this.$refs.cut.checked;
     },
     load_picture(){
-        this.analyse_img_list.push({
-                "id":1,
-                "type":"目标检测",
-                "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap/heatmap3.png",
-                "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/cnn.png",
-        });
+            var split_name = this.imgArr[0]["after_img"].split('/')
+            var fname = split_name[split_name.length-1]
+            this.analyse_img_list = []
+            this.analyse_img_list.push({
+              "id":1,
+              "type":"目标检测",
+              "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap/heatmap3_"+fname,
+              // "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/network.png",
+            });
+        
         // console.log(this.img_list);
       },
   },

@@ -27,24 +27,74 @@
               <span id="myspan1">原图</span>
             </div>
           </div>
+
+          <div>
+            <el-image
+              ref="tableTab"
+              class="img-display"
+              :src="item.after_img_1"
+              :fit="fit"
+              :lazy="true"
+              :preview-src-list="[item.after_img_1]"
+              :preview-teleported="true"
+            />
+            <div class="img-infor">
+              <span id="myspan1">损伤图像1</span>
+              <span
+                  @click="
+                    downloadimgWithWords(
+                      item.id,
+                      item.after_img_1,
+                      `${item.type}结果图.png`
+                    )
+                  "
+                ><i class="iconfont icon-xiazai" /></span>
+            </div>
+          </div>
+
+          <div>
+            <el-image
+              ref="tableTab"
+              class="img-display"
+              :src="item.after_img_2"
+              :fit="fit"
+              :lazy="true"
+              :preview-src-list="[item.after_img_2]"
+              :preview-teleported="true"
+            />
+            <div class="img-infor">
+              <span id="myspan1">损伤图像2</span>
+              <span
+                  @click="
+                    downloadimgWithWords(
+                      item.id,
+                      item.after_img_2,
+                      `${item.type}结果图.png`
+                    )
+                  "
+                ><i class="iconfont icon-xiazai" /></span>
+            </div>
+          </div>
+
+
           <div>
             <div v-if="item.type!=='孪生分类'">
               <el-image
                 ref="tableTab"
                 class="img-display"
-                :src="item.after_img"
+                :src="item.after_img_3"
                 :fit="fit"
                 :lazy="true"
-                :preview-src-list="[item.after_img]"
+                :preview-src-list="[item.after_img_3]"
                 :preview-teleported="true"
               />
               <div class="img-infor">
-                <span id="myspan2">损伤图像</span>
+                <span id="myspan2">损伤图像3</span>
                 <span
                   @click="
                     downloadimgWithWords(
                       item.id,
-                      item.after_img,
+                      item.after_img_3,
                       `${item.type}结果图.png`
                     )
                   "
@@ -55,6 +105,9 @@
               v-else
               class="img-index"
             >
+
+          
+
               <span class="index-number ">{{ Object.keys(item.data)[0] }}: {{ item.data[Object.keys(item.data)] }}</span>
             </div>
           </div>

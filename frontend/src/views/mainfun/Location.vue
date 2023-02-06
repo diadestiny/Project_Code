@@ -50,7 +50,7 @@
                 只能上传一张或多张图片，请在下方上传文件夹
               </div>
             </el-upload>
-            <el-row justify="center">
+            <!-- <el-row justify="center">
               <input
                 id="folder"
                 ref="uploadFile"
@@ -64,23 +64,7 @@
                 class="iconfont icon-wenjianshangchuan"
                 @click="fileClick"
               >上传文件夹</i>
-            </el-row>
-  
-            <el-row justify="center">
-              <p>
-                <label class="prehandle-label container">
-                  <input
-                    ref="cut"
-                    type="checkbox"
-                    @change="select()"
-                  >
-                  <span class="checkmark" />
-                  <span class="go-bold label-words">上传时编辑图片</span><i
-                    class="iconfont icon-crop-full"
-                  />
-                </label>
-              </p>
-            </el-row>
+            </el-row> -->
 
             <el-row
               justify="center"
@@ -106,20 +90,17 @@
                   </el-button>
                 </div>
               </el-col>
-              </el-row>
+            </el-row>
 
           </el-card>
         </el-col>
       </el-row>
       <Tabinfor>
         <template #left>
-          <div
-            id="sub-title"
-          >
-            结果图预览<i
-              class="iconfont icon-dianji"
-            />
-          </div>
+          <div id="sub-title"> 结果图预览<i class="iconfont icon-dianji"/> </div>
+        </template>
+        <template #right>
+            <div id="sub-title"> 原图宽高尺寸：{{size }} </div>
         </template>
       </Tabinfor>
       <el-divider />
@@ -197,128 +178,133 @@
         <div id="sub-title"> 单视角相关检测定位信息<i class="iconfont icon-dianji"/> </div>
       </template>
       <template #right>
-          <div id="sub-title"> 原图宽高尺寸：{{size }} </div>
-      </template>
-    </Tabinfor>
-
-    <el-divider />
-    <el-table
-    :data="side_tableData"
-    height="300"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="id"
-      label="ID"
-      width="50">
-    </el-table-column>
-    <el-table-column
-      prop="class"
-      label="类别"
-      width="80">
-    </el-table-column>
-    <el-table-column
-      prop="bbox"
-      label="目标位置(x1,y1,x2,y2)"
-      width="250">
-    </el-table-column>
-    <el-table-column
-      prop="size"
-      label="目标尺寸(宽x高)"
-      width="250">
-    </el-table-column>
-    <el-table-column
-      prop="score"
-      label="置信度"
-      width="100">
-    </el-table-column>
-    <el-table-column
-      prop="time"
-      label="推理时间(单位:毫秒)"
-      width="100">
-    </el-table-column>
-    </el-table>
-    <el-divider />
-    <el-table
-    :data="side_tableAP"
-    height="300"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="class"
-      label="类别"
-      width="80">
-    </el-table-column>
-    <el-table-column
-      prop="ap"
-      label="平均精度AP"
-      width="150">
-    </el-table-column>
-    </el-table>
-
-    <Tabinfor>
-      <template #left>
         <div id="sub-title"> 多视角相关检测定位信息<i class="iconfont icon-dianji"/> </div>
       </template>
-      <template #right>
-          <div id="sub-title"> 原图宽高尺寸：{{size }} </div>
-      </template>
     </Tabinfor>
+    <el-divider />
+    <el-row
+      justify="center"
+      align="middle">
+      <el-col :span="12">
+          <el-table
+            :data="side_tableData"
+            height="300"
+            border
+            style="width: 100%">
+            <el-table-column
+              prop="id"
+              label="ID"
+              width="50">
+            </el-table-column>
+            <el-table-column
+              prop="class"
+              label="类别"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="bbox"
+              label="目标位置(x1,y1,x2,y2)"
+              width="250">
+            </el-table-column>
+            <el-table-column
+              prop="size"
+              label="目标尺寸(宽x高)"
+              width="250">
+            </el-table-column>
+            <el-table-column
+              prop="score"
+              label="置信度"
+              width="100">
+            </el-table-column>
+            <el-table-column
+              prop="time"
+              label="推理时间(单位:毫秒)"
+              width="100">
+            </el-table-column>
+          </el-table>
+      </el-col>
+      <el-col :span="12">
+        <el-table
+          :data="tableData"
+          height="300"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="50">
+          </el-table-column>
+          <el-table-column
+            prop="class"
+            label="类别"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="bbox"
+            label="目标位置(x1,y1,x2,y2)"
+            width="250">
+          </el-table-column>
+          <el-table-column
+            prop="size"
+            label="目标尺寸(宽x高)"
+            width="250">
+          </el-table-column>
+          <el-table-column
+            prop="score"
+            label="置信度"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="time"
+            label="推理时间(单位:毫秒)"
+            width="100">
+          </el-table-column>
+        </el-table>  
+        </el-col>
+    </el-row>
+    <el-divider />
 
-    <el-divider />
-    <el-table
-    :data="tableData"
-    height="300"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="id"
-      label="ID"
-      width="50">
-    </el-table-column>
-    <el-table-column
-      prop="class"
-      label="类别"
-      width="80">
-    </el-table-column>
-    <el-table-column
-      prop="bbox"
-      label="目标位置(x1,y1,x2,y2)"
-      width="250">
-    </el-table-column>
-    <el-table-column
-      prop="size"
-      label="目标尺寸(宽x高)"
-      width="250">
-    </el-table-column>
-    <el-table-column
-      prop="score"
-      label="置信度"
-      width="100">
-    </el-table-column>
-    <el-table-column
-      prop="time"
-      label="推理时间(单位:毫秒)"
-      width="100">
-    </el-table-column>
-    </el-table>
-    <el-divider />
-    <el-table
-    :data="tableAP"
-    height="300"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="class"
-      label="类别"
-      width="80">
-    </el-table-column>
-    <el-table-column
-      prop="ap"
-      label="平均精度AP"
-      width="150">
-    </el-table-column>
-    </el-table>
+    <el-row
+      justify="center"
+      align="middle">
+      <el-col :span="12">
+        <el-table
+          :data="side_tableAP"
+          height="300"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="class"
+            label="类别"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="ap"
+            label="平均预测准确率"
+            width="150">
+          </el-table-column>
+       </el-table>
+      </el-col>
+      <el-col :span="12">
+        <el-table
+          :data="tableAP"
+          height="300"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="class"
+            label="类别"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="ap"
+            label="平均预测准确率"
+            width="150">
+          </el-table-column>
+          </el-table>
+        </el-col>
+    </el-row>
+
      <Bottominfor />
     </div>
   </template>
@@ -368,11 +354,12 @@
         modelPathArr:[],
         imgArr:[],
         outArr:[],
+        side_tableData:[],
         tableData: [],
         tableAP:[],
         side_tableAP:[],
         size: "",
-        analyse_img_list:[]
+        analyse_img_list:[],
       };
     },
     updated() {
@@ -435,7 +422,7 @@
         document.querySelector("#folder").click();
       },
       beforeUpload(file) {
-        this.cutVisible = this.$refs.cut.checked;
+        // this.cutVisible = this.$refs.cut.checked;
         const fileSuffix = file.name.substring(file.name.lastIndexOf(".") + 1)
         const whiteList = ['jpg','jpeg','png','JPG','JPEG']
         if (whiteList.indexOf(fileSuffix) === -1) {
@@ -449,16 +436,19 @@
           this.fileimg = window.URL.createObjectURL(new Blob([file]));}
       },
       select() {
-        this.isNotCut = this.$refs.cut.checked;
+        // this.isNotCut = this.$refs.cut.checked;
       },
       load_picture(){
-        this.analyse_img_list.push({
-                "id":1,
-                "type":"xxxx",
-                "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap.png",
-                "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/cnn.png",
-        });
-        // console.log(this.img_list);
+            var split_name = this.imgArr[0]["after_img"].split('/')
+            var fname = split_name[split_name.length-1].replace("jpg","png")
+            this.analyse_img_list = []
+            this.analyse_img_list.push({
+                    "id":1,
+                    "type":"xxxx",
+                    "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap_"+fname,
+                    // "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/cnn.png",
+            });
+            // console.log(this.img_list);
       },
     },
   };
