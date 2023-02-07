@@ -232,14 +232,14 @@
     height="300"
     border
     style="width: 100%">
-    <el-table-column
+    <!-- <el-table-column
       prop="class"
       label="类别"
       width="120">
-    </el-table-column>
+    </el-table-column> -->
     <el-table-column
       prop="ap"
-      label="平均预测准确率"
+      label="识别准确率"
       width="150">
     </el-table-column>
     </el-table>

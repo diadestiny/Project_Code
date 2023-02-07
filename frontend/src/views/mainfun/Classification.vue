@@ -289,8 +289,38 @@
           </el-table-column>
           </el-table>
       </el-col>
-
     </el-row>
+    
+    <el-divider />
+    <el-table
+    :data="tableAP"
+    height="300"
+    border
+    style="width: 100%">
+    <el-table-column
+      prop="ap"
+      label="识别准确率"
+      width="150">
+    </el-table-column>
+    </el-table>
+
+    <Tabinfor>
+      <template #left>
+        <div id="sub-title"> 模型架构图<i class="iconfont icon-dianji"/> </div>
+      </template>
+    </Tabinfor>
+    <el-divider />
+    <div>
+      <el-image
+        ref="tableTab"
+        class="img-display"
+        :src="networksrc"
+        :fit="fit"
+        :lazy="true"
+        :preview-src-list="[networksrc]"
+        :preview-teleported="true"
+      />
+    </div>
     
     <Bottominfor />
   </div>
@@ -341,6 +371,8 @@ export default {
       tableData: [],
       size: "",
       analyse_img_list:[],
+      networksrc:"",
+      tableAP:[],
     };
   },
   updated() {
@@ -371,6 +403,7 @@ export default {
     //   this.modelPathArr = res.data.data
     //   this.uploadSrc.model_path = this.modelPathArr[0]?.model_path
     // }).catch((rej)=>{})
+    this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/network/network.png"
   },
   methods: {
     imgUpload,

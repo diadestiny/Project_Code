@@ -27,12 +27,12 @@ def yolo_location(image_1,image_2):
     image_copy = image.copy()
     side_image = Image.open(image_2)
     image_name_id = image_1.split('/')[-1][:-4]
+    name = image_1.split("/")[-1]
     res_image,res_data,total_time,ap_dict = yolo.detect_image(image,side_image, image_name_id,crop = False, count=False)
     # yolo.detect_heatmap(image,side_image,"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap.png")
     # print(image==image_copy)
     res_image2,res_data2,side_total_time,side_ap_dict = single_yolo.detect_image(image_copy, image_name_id,crop = False, count=False)
     # generate_detction_network_pic(yolo.net.module.backbone.cpu(),"cnn",image.size[0],image.size[1])
-    name = image_1.split("/")[-1]
     res_image.save(main_path+name)
     res_image2.save(side_path+name)
     if total_time > 100:

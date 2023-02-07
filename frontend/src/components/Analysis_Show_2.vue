@@ -14,35 +14,37 @@
           第<span class="index-number">{{ item.id }}</span>组
         </el-divider> -->
         <div>
-          <div v-if="item.type!=='孪生分类'">
-            <el-image
-              ref="tableTab"
-              class="img-display"
-              :src="item.img_path"
-              :fit="fit"
-              :lazy="true"
-              :preview-src-list="[item.img_path]"
-              :preview-teleported="true"
-            />
-            <div class="img-infor">
-              <span id="myspan2">真实数据</span>
-              <span
-                @click="
-                  downloadimgWithWords(
-                    item.id,
-                    item.after_img,
-                    `${item.type}结果图.png`
-                  )
-                "
-              ><i class="iconfont icon-xiazai" /></span>
-            </div>
-          </div>
-          <div
-            v-else
-            class="img-index">
-            <span class="index-number ">{{ Object.keys(item.data)[0] }}: {{ item.data[Object.keys(item.data)] }}</span>
+          <el-image
+            ref="tableTab"
+            class="img-display"
+            :src="item.heatmap1"
+            :fit="fit"
+            :lazy="true"
+            :preview-src-list="[item.heatmap1]"
+            :preview-teleported="true"
+          />
+         
+          <div class="img-infor">
+            <span id="myspan1">单视角热力图</span>
           </div>
         </div>
+
+        <div>
+          <el-image
+            ref="tableTab"
+            class="img-display"
+            :src="item.heatmap2"
+            :fit="fit"
+            :lazy="true"
+            :preview-src-list="[item.heatmap2]"
+            :preview-teleported="true"
+          />
+         
+          <div class="img-infor">
+            <span id="myspan1">多视角热力图</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </el-card>
@@ -52,7 +54,7 @@
 import { downloadimgWithWords } from "@/utils/download.js";
 
 export default {
-  name: "situation_imgShow",
+  name: "Analysis_Show_3",
   props: {
     imgArr:{
       type:Array,
@@ -69,9 +71,11 @@ export default {
   },
   mounted() {
     this.childImgArr = this.imgArr
+    // console.log(this.childImgArr)
   },
   updated() {
     this.childImgArr = this.imgArr
+    // console.log(this.childImgArr)
   },
   methods: {
     downloadimgWithWords,
@@ -112,8 +116,8 @@ export default {
       line-height: 21rem;
     }
   .img-display{
-    width:31rem;
-    height: 31rem;
+    width:21rem;
+    height: 21rem;
   }
     .img-divider{
       align-items: center;

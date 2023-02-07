@@ -22,6 +22,14 @@ export function imgUpload(data,funUrl){
     })
 }
 
+export function gettable(funUrl){
+    return request({
+        method:'POST',
+        url:`/api/myfunction/${funUrl}`,
+    })
+}
+
+
 export function histogramUpload(data){
     return request({
         method:'POST',

@@ -25,7 +25,7 @@
               :preview-teleported="true"
             />
             <div class="img-infor">
-              <span id="myspan2">真实数据</span>
+              <span id="myspan2">推理结果</span>
               <span
                 @click="
                   downloadimgWithWords(
@@ -39,7 +39,8 @@
           </div>
           <div
             v-else
-            class="img-index">
+            class="img-index"
+          >
             <span class="index-number ">{{ Object.keys(item.data)[0] }}: {{ item.data[Object.keys(item.data)] }}</span>
           </div>
         </div>

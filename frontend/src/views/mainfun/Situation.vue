@@ -10,12 +10,12 @@
       <el-divider />
       <Tabinfor>
       <template #left>
-        <div id="sub-title"> 已知相关飞机信息<i class="iconfont icon-dianji"/> </div>
+        <div id="sub-title"> 已知相关船舰信息<i class="iconfont icon-dianji"/> </div>
       </template>
       </Tabinfor>
       <el-divider />
       <el-table
-      :data="inputData"
+      :data="inputData2"
       height="300"
       border
       style="width: 100%">
@@ -24,41 +24,41 @@
         label="ID"
         width="50">
       </el-table-column>
+      <!-- <el-table-column
+        prop="biaoshifu"
+        label="标识符"
+        width="200">
+      </el-table-column> -->
       <el-table-column
-        prop="timestamp"
-        label="时间戳"
-        width="150">
-      </el-table-column>
-      <el-table-column
-        prop="longitude"
+        prop="jingdu"
         label="经度"
         width="120">
       </el-table-column>
       <el-table-column
-        prop="latitude"
+        prop="weidu"
         label="纬度"
         width="120">
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         prop="height"
         label="高度"
         width="100">
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
-        prop="speed"
-        label="速度"
+        prop="date"
+        label="日期"
         width="120">
       </el-table-column>
       <el-table-column
-        prop="angle"
-        label="航向角"
+        prop="time"
+        label="时间"
         width="120">
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         prop="encode"
         label="类型编码"
         width="100">
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
       <!-- <p>
         请上传包含<span class="go-bold">船舰图片的文件夹</span><i class="iconfont icon-wenjianjia" />或者<span class="go-bold">图片</span>
@@ -116,27 +116,43 @@
           ><span class="hidden-sm-and-down">点击刷新</span></i></span>
         </template>
       </Tabinfor>
-      <el-dialog
-        v-model="cutVisible"
-        :modal="false"
-        title="编辑"
-        width="75%"
-        top="0"
-      >
-        <MyVueCropper
-          :fileimg="fileimg"
-          :funtype="funtype"
-          :file="file"
-          :child_prehandle="uploadSrc.prehandle"
-          :child_denoise="uploadSrc.denoise"
-          :child-model-path="uploadSrc.model_path"
-          @cut-changed="notvisible"
-          @child-refresh="getMore"
-        />
-      </el-dialog>
       <situation_imgShow
         :img-arr = "img_list"/>
+        <Tabinfor>
+        <template #left>
+          <div
+            id="sub-title"
+          >
+            推理结果预览<i
+              class="iconfont icon-dianji"
+            />
+          </div>
+        </template>
+      </Tabinfor>
+      <el-divider />
       <Tabinfor>
+        <template #left>
+          <p>
+            <span class="go-bold">点击图片</span>即可预览
+            <i
+              class="iconfont icon-duigou"
+            />
+            <span><span class="go-bold">滑轮滚动</span>即可放大缩小</span>
+          </p>
+        </template>
+  
+        <template #right>
+          <span class="go-bold"><i
+            class="iconfont icon-shuaxin"
+            style="padding-right:55px"
+            @click="getMore"
+          ><span class="hidden-sm-and-down">点击刷新</span></i></span>
+        </template>
+      </Tabinfor>
+      <situation_imgShow2
+        :img-arr = "img_list_2"/>
+        
+      <!-- <Tabinfor>
       <template #left>
         <div id="sub-title"> 相关态势预测信息<i class="iconfont icon-dianji"/> </div>
       </template>
@@ -167,7 +183,7 @@
         label="推理时间(单位:毫秒)"
         width="100">
       </el-table-column>
-    </el-table>
+    </el-table> -->
       <Bottominfor />
     </div>
   </template>
@@ -175,7 +191,9 @@
   import {createSrc, imgUpload,getCustomModel} from "@/api/upload";
   import {historyGetPage} from "@/api/history";
   import {upload} from "@/utils/getUploadImg";
+  import {gettable} from "@/api/upload";
   import situation_imgShow from '@/components/situation_imgShow'
+  import situation_imgShow2 from '@/components/situation_imgShow2'
   import classification_imgShow from '@/components/classification_imgShow'
   import Tabinfor from "@/components/Tabinfor";
   import Bottominfor from "@/components/Bottominfor";
@@ -188,6 +206,7 @@
       Bottominfor,
       MyVueCropper,
       situation_imgShow,
+      situation_imgShow2,
       classification_imgShow
     },
     beforeRouteEnter(to, from, next) {
@@ -218,12 +237,13 @@
         inputData:[{
           id:'1',
           timestamp: '2074293900',
-          longitude: '137.352373',
-          latitude: '31.995839',
+          longitude: '116.801289',
+          latitude: '39.950773',
           height:'10000',
           speed:'15.18338756',
           angle:'214.6854958',
-          encode:'2010101'
+          encode:'2009-04-15',
+          time:'00:04:06'
         },
         {
           id:'2',
@@ -255,7 +275,9 @@
           angle:'213.0162978',
           encode:'2010101'
         }],
-        img_list:[]
+        inputData2:[],
+        img_list:[],
+        img_list_2:[]
       }
       
     },
@@ -287,6 +309,17 @@
       //   this.modelPathArr = res.data.data
       //   this.uploadSrc.model_path = this.modelPathArr[0]?.model_path
       // }).catch((rej)=>{})
+      this.inputData2 = []
+      this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/network.png"
+      this.gettable("situation").then((res) => {
+          var temp = res.data.data["imgArr"];
+          for(var i=0;i<temp.length;i++){
+            this.inputData2.push({"id":temp[i]["id"],"jingdu":temp[i]["jingdu"],"weidu":temp[i]["weidu"],"biaoshifu":temp[i]["biaoshifu"],"date":temp[i]["date"],"time":temp[i]["time"]})
+          }
+          
+        });
+        // console.log(this.inputData2)
+
     },
     methods: {
       imgUpload,
@@ -294,6 +327,7 @@
       historyGetPage,
       createSrc,
       upload,
+      gettable,
       checkUpload() {
         this.isUpload = this.beforeImg.length !== 0;
       },
@@ -342,7 +376,7 @@
         this.img_list.push({
                 "id":1,
                 "type":"态势预测",
-                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/situation1.png"
+                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/pic2.png"
         });
         // console.log(this.img_list);
       },
@@ -360,6 +394,11 @@
                 "probability": probability.toFixed(3),
                 "time":time,
         })
+        this.img_list_2.push({
+                "id":1,
+                "type":"态势预测",
+                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/pic1.png"
+        });
         // console.log(this.tableData)
       }
     },

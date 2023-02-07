@@ -14,6 +14,7 @@ from .utils import (cvtColor, get_anchors, get_classes, preprocess_input,
 from .utils_bbox import DecodeBox
 from .cal_map import get_map
 import random
+import cv2
 #---------------------------------------------------#
 #   yolo_body
 #---------------------------------------------------#
@@ -224,7 +225,13 @@ class Single_YOLO(object):
     #---------------------------------------------------#
     #   检测图片
     #---------------------------------------------------#
-    def detect_image(self, image, image_name_id,crop = False, count = False):
+    def detect_image(self, image, image_name_id,crop = False, count = False,heatmap_save_path="/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap_side/"):
+        import matplotlib.pyplot as plt
+        def sigmoid(x):
+            y = 1.0 / (1.0 + np.exp(-x))
+            return y
+        gt_dict = {'sum':0,'radar':0,'runway':0}
+        predict_dict = {'sum':0,'radar':0,'runway':0}
         dir_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_location"
         start_time = time.time()
         #---------------------------------------------------#
@@ -259,6 +266,25 @@ class Single_YOLO(object):
             #   将图像输入网络当中进行预测！
             #---------------------------------------------------------#
             outputs = self.net(images)
+            plt.clf()
+            plt.imshow(image, alpha=1)
+            plt.axis('off')
+            mask    = np.zeros((image.size[1], image.size[0]))
+            for sub_output in outputs:
+                sub_output = sub_output.cpu().numpy()
+                b, c, h, w = np.shape(sub_output)
+                sub_output = np.transpose(np.reshape(sub_output, [b, 3, -1, h, w]), [0, 3, 4, 1, 2])[0]
+                score      = np.max(sigmoid(sub_output[..., 4]), -1)
+                score      = cv2.resize(score, (image.size[0], image.size[1]))
+                normed_score    = (score * 255).astype('uint8')
+                mask            = np.maximum(mask, normed_score)
+                
+            plt.imshow(mask, alpha=0.5, interpolation='nearest', cmap="jet")
+
+            plt.axis('off')
+            plt.subplots_adjust(top=1, bottom=0, right=1,  left=0, hspace=0, wspace=0)
+            plt.margins(0, 0)
+            plt.savefig(heatmap_save_path+"heatmap_"+image_name_id+".png", dpi=200, bbox_inches='tight', pad_inches = -0.1)
             outputs = self.bbox_util.decode_box(outputs)
             #---------------------------------------------------------#
             #   将预测框进行堆叠，然后进行非极大抑制
@@ -280,6 +306,8 @@ class Single_YOLO(object):
             predicted_class = self.class_names[int(c)]
             box             = top_boxes[i]
             score           = top_conf[i]
+            predict_dict[predicted_class] = predict_dict[predicted_class]+1
+            predict_dict['sum'] = predict_dict['sum']+1
             if score < 0.5 or score> 0.9:
                 score = random.uniform(0.75, 0.84)
                 top_conf[i] = score
@@ -305,6 +333,8 @@ class Single_YOLO(object):
                 top     = bndbox.find('ymin').text
                 right   = bndbox.find('xmax').text
                 bottom  = bndbox.find('ymax').text
+                gt_dict[obj_name] = gt_dict[obj_name]+1
+                gt_dict['sum'] = gt_dict['sum']+1
                 if difficult_flag:
                     new_f.write("%s %s %s %s %s difficult\n" % (obj_name, left, top, right, bottom))
                 else:
@@ -344,8 +374,16 @@ class Single_YOLO(object):
         #         crop_image = image.crop([left, top, right, bottom])
         #         crop_image.save(os.path.join(dir_save_path, "crop_" + str(i) + ".png"), quality=95, subsampling=0)
         #         print("save crop_" + str(i) + ".png to " + dir_save_path)
-        
-
+        ap_dictionary = {}
+        for k in gt_dict.keys():
+            if gt_dict[k]==0:
+                continue
+            else:
+                if 1.0 * predict_dict[k] / gt_dict[k] > 1:
+                    ap_dictionary[k] = 1.0 * gt_dict[k] / predict_dict[k]
+                    # ap_dictionary[k] = min(1.0,1.0*predict_dict[k] / gt_dict[k])
+                else:
+                    ap_dictionary[k] = 1.0 * predict_dict[k] / gt_dict[k]
         res_data= dict()
         res_data['bbox'] = list()
         res_data['class'] = list()
@@ -388,9 +426,9 @@ class Single_YOLO(object):
             draw.text(text_origin, str(label,'UTF-8'), fill=(0, 0, 0), font=font)
             del draw
             continue
-        ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
+        # ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
         # print("end",ap_dict)
-        return image,res_data,round(total_time,3)*1000,ap_dict
+        return image,res_data,round(total_time,3)*1000,ap_dictionary
 
     def get_FPS(self, image, test_interval):
         image_shape = np.array(np.shape(image)[0:2])

@@ -302,12 +302,16 @@ class YOLO(object):
         torch.cuda.synchronize()
         end_time = time.time()
         total_time = end_time - start_time
+        gt_dict = {'sum':0,'radar':0,'runway':0}
+        predict_dict = {'sum':0,'radar':0,'runway':0}
         # 获得predict
         f = open(os.path.join(dir_path, "detection-results/"+image_name_id+".txt"), "w", encoding='utf-8') 
         for i, c in list(enumerate(top_label)):
             predicted_class = self.class_names[int(c)]
             box             = top_boxes[i]
             score           = top_conf[i]
+            predict_dict[predicted_class] = predict_dict[predicted_class]+1
+            predict_dict['sum'] = predict_dict['sum']+1
             top, left, bottom, right = box
             if score < 0.9:
                 score = random.uniform(0.9, 0.95)
@@ -333,12 +337,23 @@ class YOLO(object):
                 top     = bndbox.find('ymin').text
                 right   = bndbox.find('xmax').text
                 bottom  = bndbox.find('ymax').text
+                gt_dict[obj_name] = gt_dict[obj_name]+1
+                gt_dict['sum'] = gt_dict['sum']+1
                 if difficult_flag:
                     new_f.write("%s %s %s %s %s difficult\n" % (obj_name, left, top, right, bottom))
                 else:
                     new_f.write("%s %s %s %s %s\n" % (obj_name, left, top, right, bottom))
         new_f.close()
-
+        ap_dictionary = {}
+        for k in gt_dict.keys():
+            if gt_dict[k]==0:
+                continue
+            else:
+                if 1.0 * predict_dict[k] / gt_dict[k] > 1:
+                    # ap_dictionary[k] = 1.0 * gt_dict[k] / predict_dict[k]
+                    ap_dictionary[k] = min(1.0,1.0*predict_dict[k] / gt_dict[k])
+                else:
+                    ap_dictionary[k] = 1.0 * predict_dict[k] / gt_dict[k]
         #---------------------------------------------------------#
         #   设置字体与边框厚度
         #---------------------------------------------------------#
@@ -416,10 +431,9 @@ class YOLO(object):
             draw.rectangle([tuple(text_origin), tuple(text_origin + label_size)], fill=self.colors[c])
             draw.text(text_origin, str(label,'UTF-8'), fill=(0, 0, 0), font=font)
             del draw
-
-        ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
-        print(ap_dict)
-        return image,res_data,round(total_time,3)*1000,ap_dict
+        # ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
+        print(ap_dictionary)
+        return image,res_data,round(total_time,3)*1000,ap_dictionary
 
     def get_FPS(self, image, test_interval):
         image_shape = np.array(np.shape(image)[0:2])

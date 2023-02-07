@@ -26,6 +26,8 @@ class Siamese_config(object):
         #   model_path指向logs文件夹下的权值文件
         #-----------------------------------------------------#
         "model_path"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/best_epoch_weights.pth',
+        "model_path_2"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/ep050-loss0.699-val_loss0.611.pth',
+        "model_path_3"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/ep080-loss0.594-val_loss0.408.pth',
         #-----------------------------------------------------#
         #   输入图片的大小。
         #-----------------------------------------------------#
@@ -80,6 +82,23 @@ class Siamese_config(object):
             if "vgg" in k:
                 temp_dict[k.replace('vgg.','')]=model_dict[k]
         missing_keys,unexpected_keys = self.heat_model.load_state_dict(temp_dict,strict=False)
+
+        self.heat_model_2 = VGG16(True, 3)
+        model_dict_2 = torch.load(self.model_path_2, map_location=device)
+        temp_dict_2 = {}
+        for k in model_dict_2.keys():
+            if "vgg" in k:
+                temp_dict_2[k.replace('vgg.','')]=model_dict_2[k]
+        missing_keys,unexpected_keys = self.heat_model_2.load_state_dict(temp_dict_2,strict=False)
+
+        self.heat_model_3 = VGG16(True, 3)
+        model_dict_3 = torch.load(self.model_path_3, map_location=device)
+        temp_dict_3 = {}
+        for k in model_dict_3.keys():
+            if "vgg" in k:
+                temp_dict_3[k.replace('vgg.','')]=model_dict_3[k]
+        missing_keys,unexpected_keys = self.heat_model_3.load_state_dict(temp_dict_3,strict=False)
+
         # print("[missing_keys]:", *missing_keys, sep="\n")
         # print("[unexpected_keys]:", *unexpected_keys, sep="\n")
         
@@ -136,8 +155,19 @@ class Siamese_config(object):
         # detach_photo_1= photo_1.detach()
         # 加载热力图
         test_model = self.heat_model.cuda().eval()
+        test_model_2 = self.heat_model_2.cuda().eval()
+        test_model_3 = self.heat_model_3.cuda().eval()
         target_layers = [test_model.features[-1]]
-        cam = GradCAM(model=test_model, target_layers=target_layers)
+        target_layers_2 = [test_model_2.features[-1]]
+        target_layers_3 = [test_model_3.features[-1]]
+        if "easy" in heatmap_path:
+            cam = GradCAM(model=test_model_2, target_layers=target_layers_2)
+        elif "mid" in heatmap_path:
+            cam = GradCAM(model=test_model_3, target_layers=target_layers_3)
+        elif "hard" in heatmap_path:
+            cam = GradCAM(model=test_model, target_layers=target_layers)
+        else:
+            cam = GradCAM(model=test_model, target_layers=target_layers)
         target_category = None
         grayscale_cam = cam(input_tensor=copy_photo_1.cuda(), target_category=target_category)
         grayscale_cam = grayscale_cam[0, :]

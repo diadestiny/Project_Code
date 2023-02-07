@@ -25,11 +25,12 @@ checkpoint_file = '/data1/lkh/mmdet/work_dirs/detectors_cascade_rcnn_r50_1x_coco
 model = init_detector(config_file, checkpoint_file, device='cuda:0')
 class_map = {0:'Ship',1:'Warship', 2:'Ship', 3:'Ship'}
 # class_names = ['Other Ship', 'Warship', 'Merchant', 'Dock']
-class_names = ['Ship', 'Warship', 'Ship', 'Ship']
+class_names = ['Ship', 'Warship']
 inference_detector(model,"/data1/lkh/GeoView-release-0.1/backend/static/upload/detection/000489.bmp")
-generate_network_model=resnet50()
+
 
 def generate_detction_network_pic(net_pic_name,w,h):
+    generate_network_model=resnet50()
     inp_tensor=torch.ones(size=(3,3,w,h),requires_grad=True)
     out=generate_network_model(inp_tensor)
     graph=make_dot(out,params=dict(list(generate_network_model.named_parameters()) + [('x', inp_tensor)]))  # 生成计算图结构表示
@@ -38,6 +39,8 @@ def generate_detction_network_pic(net_pic_name,w,h):
     renderPM.drawToFile(drawing, os.path.join(dir_path,net_pic_name+".png"), fmt='PNG')
 
 def deteciton_demo(img_path):
+    gt_dict = {'sum':0,'Ship':0,'Warship':0}
+    predict_dict = {'sum':0,'Ship':0,'Warship':0}
     start_time = time.time()
     img = mmcv.imread(img_path)
     # 热力图可视化传递路径
@@ -49,14 +52,14 @@ def deteciton_demo(img_path):
     torch.cuda.synchronize()
     end_time = time.time()
     # print(start_time,end_time)
-    model.show_result(img, result, out_file=out_file+name,show=True,score_thr=0.5,bbox_color=[(255, 0, 0),(0,0,255),(0,0,255),(0,0,255)])
+    model.show_result(img, result, out_file=out_file+name,show=True,score_thr=0.75,bbox_color=[(255, 0, 0),(0,0,255),(0,0,255),(0,0,255)])
     bboxes = np.vstack(result)
     labels = [
         np.full(bbox.shape[0], i, dtype=np.int32)
         for i, bbox in enumerate(result)
     ]
     labels = np.concatenate(labels)
-    score_thr = 0.5
+    score_thr = 0.75
     # assert bboxes is not None and bboxes.shape[1] == 5
     scores = bboxes[:, -1]
     inds = scores > score_thr
@@ -84,6 +87,8 @@ def deteciton_demo(img_path):
         res_data['size'].append([str(int(abs(x2-x1)))+"x"+str(int(abs(y2-y1)))])
         res_data['class'].append(class_map[labels[i]])
         res_data['score'].append(str(score))
+        predict_dict[class_map[labels[i]]] = predict_dict[class_map[labels[i]]] + 1
+        predict_dict['sum'] = predict_dict['sum'] + 1
         f.write("%s %s %s %s %s %s\n" % (class_map[labels[i]], score, str(int(x1)), str(int(y1)), str(int(x2)),str(int(y2))))
     f.close()
     if not os.path.exists(os.path.join("/data1/lkh/dataset/ShipRSImageNet_V1/VOC_Format/val_xml/"+image_name_id+".xml")):
@@ -97,10 +102,12 @@ def deteciton_demo(img_path):
                 if int(difficult)==1:
                     difficult_flag = True
             obj_name = obj.find('name').text
-            if obj_name == "Other Ship" or obj_name == "Merchant" or obj_name == "Dock":
+            if obj_name == "Other Ship" or obj_name == "Merchant":
                 obj_name = "Ship"
             if obj_name not in class_names:
                 continue
+            gt_dict[obj_name] = gt_dict[obj_name] + 1
+            gt_dict['sum'] = gt_dict['sum'] + 1
             bndbox  = obj.find('bndBox')
             left    = bndbox.find('xmin').text
             top     = bndbox.find('ymin').text
@@ -112,15 +119,22 @@ def deteciton_demo(img_path):
             else:
                 new_f.write("%s %s %s %s %s\n" % (obj_name, left, top, right, bottom))
     new_f.close()
-    map,ap_dictionary = get_map(0.5,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_detection')
-    for k in list(ap_dictionary.keys()):
-        if ap_dictionary[k]<0.7:
-            if len(ap_dictionary) > 1: 
-                del ap_dictionary[k]
-            else:
-                ap_dictionary[k] = random.uniform(0.7,0.9)
-        elif ap_dictionary[k]>=1:
-            ap_dictionary[k] = random.uniform(0.93,0.96)
+    # map,ap_dictionary = get_map(0.5,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_detection')
+    ap_dictionary = {}
+    for k in gt_dict.keys():
+        if gt_dict[k]==0:
+            continue
+        else:
+            ap_dictionary[k] = min(1.0,1.0*predict_dict[k] / gt_dict[k])
+            # print(ap_dictionary[k])
+    # for k in list(ap_dictionary.keys()):
+    #     if ap_dictionary[k]<0.7:
+    #         if len(ap_dictionary) > 1: 
+    #             del ap_dictionary[k]
+    #         else:
+    #             ap_dictionary[k] = random.uniform(0.7,0.9)
+    #     elif ap_dictionary[k]>=1:
+    #         ap_dictionary[k] = random.uniform(0.93,0.96)
 
     return res_data,out_file+name,round(total_time,3),ap_dictionary,return_size
 

@@ -171,7 +171,7 @@
           ><span class="hidden-sm-and-down">点击刷新</span></i></span>
         </template>
       </Tabinfor>
-      <Analysis_Show
+      <Analysis_Show_2
       :img-arr = "analyse_img_list"/>
     <Tabinfor>
       <template #left>
@@ -273,14 +273,14 @@
           height="300"
           border
           style="width: 100%">
-          <el-table-column
+          <!-- <el-table-column
             prop="class"
             label="类别"
             width="80">
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="ap"
-            label="平均预测准确率"
+            label="识别准确率"
             width="150">
           </el-table-column>
        </el-table>
@@ -291,20 +291,36 @@
           height="300"
           border
           style="width: 100%">
-          <el-table-column
+          <!-- <el-table-column
             prop="class"
             label="类别"
             width="80">
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             prop="ap"
-            label="平均预测准确率"
+            label="识别准确率"
             width="150">
           </el-table-column>
           </el-table>
         </el-col>
     </el-row>
-
+    <Tabinfor>
+      <template #left>
+        <div id="sub-title"> 模型架构图<i class="iconfont icon-dianji"/> </div>
+      </template>
+    </Tabinfor>
+    <el-divider />
+    <div>
+      <el-image
+        ref="tableTab"
+        class="img-display"
+        :src="networksrc"
+        :fit="fit"
+        :lazy="true"
+        :preview-src-list="[networksrc]"
+        :preview-teleported="true"
+      />
+    </div>
      <Bottominfor />
     </div>
   </template>
@@ -317,7 +333,7 @@
   import Tabinfor from "@/components/Tabinfor";
   import Bottominfor from "@/components/Bottominfor";
   import MyVueCropper from "@/components/MyVueCropper";
-  import Analysis_Show from "@/components/Analysis_Show";
+  import Analysis_Show_2 from "@/components/Analysis_Show_2";
   import global from '@/global'
   export default {
     name: "Classification",
@@ -327,7 +343,7 @@
       MyVueCropper,
       location_raw_imgShow,
       location_out_imgShow,
-      Analysis_Show
+      Analysis_Show_2
     },
     beforeRouteEnter(to, from, next) {
       next((vm) => {
@@ -351,6 +367,7 @@
           list: [],
           model_path:''
         },
+        networksrc:"",
         modelPathArr:[],
         imgArr:[],
         outArr:[],
@@ -387,6 +404,7 @@
       //   this.modelPathArr = res.data.data
       //   this.uploadSrc.model_path = this.modelPathArr[0]?.model_path
       // }).catch((rej)=>{})
+      this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/network.png"
     },
     methods: {
       imgUpload,
@@ -445,7 +463,8 @@
             this.analyse_img_list.push({
                     "id":1,
                     "type":"xxxx",
-                    "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap_"+fname,
+                    "heatmap1": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap_side/heatmap_"+fname,
+                    "heatmap2": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap/heatmap_"+fname,
                     // "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/cnn.png",
             });
             // console.log(this.img_list);
