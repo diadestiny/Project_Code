@@ -102,17 +102,25 @@ def deteciton_demo(img_path):
                 if int(difficult)==1:
                     difficult_flag = True
             obj_name = obj.find('name').text
-            if obj_name == "Other Ship" or obj_name == "Merchant":
+            print(obj_name)
+            if obj_name == "Other Ship" or obj_name == "Merchant" or obj_name=="ship":
                 obj_name = "Ship"
             if obj_name not in class_names:
                 continue
             gt_dict[obj_name] = gt_dict[obj_name] + 1
             gt_dict['sum'] = gt_dict['sum'] + 1
-            bndbox  = obj.find('bndBox')
-            left    = bndbox.find('xmin').text
-            top     = bndbox.find('ymin').text
-            right   = bndbox.find('xmax').text
-            bottom  = bndbox.find('ymax').text
+            if obj.find('bndbox') != None:
+                bndbox  = obj.find('bndbox')
+                left    = bndbox.find('xmin').text
+                top     = bndbox.find('ymin').text
+                right   = bndbox.find('xmax').text
+                bottom  = bndbox.find('ymax').text
+            else:
+                bndbox  = obj.find('bndBox')
+                left    = bndbox.find('xmin').text
+                top     = bndbox.find('ymin').text
+                right   = bndbox.find('xmax').text
+                bottom  = bndbox.find('ymax').text
             # print(left,top)
             if difficult_flag:
                 new_f.write("%s %s %s %s %s difficult\n" % (obj_name, left, top, right, bottom))

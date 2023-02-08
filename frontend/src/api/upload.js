@@ -22,10 +22,11 @@ export function imgUpload(data,funUrl){
     })
 }
 
-export function gettable(funUrl){
+export function getSituation(funUrl,filename){
     return request({
         method:'POST',
         url:`/api/myfunction/${funUrl}`,
+        data: {"filename":filename}
     })
 }
 

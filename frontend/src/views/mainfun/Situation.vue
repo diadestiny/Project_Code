@@ -14,67 +14,81 @@
       </template>
       </Tabinfor>
       <el-divider />
-      <el-table
-      :data="inputData2"
-      height="300"
-      border
-      style="width: 100%">
-      <el-table-column
-        prop="id"
-        label="ID"
-        width="50">
-      </el-table-column>
-      <!-- <el-table-column
-        prop="biaoshifu"
-        label="标识符"
-        width="200">
-      </el-table-column> -->
-      <el-table-column
-        prop="jingdu"
-        label="经度"
-        width="120">
-      </el-table-column>
-      <el-table-column
-        prop="weidu"
-        label="纬度"
-        width="120">
-      </el-table-column>
-      <!-- <el-table-column
-        prop="height"
-        label="高度"
-        width="100">
-      </el-table-column> -->
-      <el-table-column
-        prop="date"
-        label="日期"
-        width="120">
-      </el-table-column>
-      <el-table-column
-        prop="time"
-        label="时间"
-        width="120">
-      </el-table-column>
-      <!-- <el-table-column
-        prop="encode"
-        label="类型编码"
-        width="100">
-      </el-table-column> -->
-    </el-table>
+        <el-table
+          :data="inputData2"
+          height="300"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="50">
+          </el-table-column>
+          <!-- <el-table-column
+            prop="biaoshifu"
+            label="标识符"
+            width="200">
+          </el-table-column> -->
+          <el-table-column
+            prop="jingdu"
+            label="经度"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="weidu"
+            label="纬度"
+            width="120">
+          </el-table-column>
+          <!-- <el-table-column
+            prop="height"
+            label="高度"
+            width="100">
+          </el-table-column> -->
+          <el-table-column
+            prop="date"
+            label="日期"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="time"
+            label="时间"
+            width="120">
+          </el-table-column>
+          <!-- <el-table-column
+            prop="encode"
+            label="类型编码"
+            width="100">
+          </el-table-column> -->
+        </el-table>
       <!-- <p>
         请上传包含<span class="go-bold">船舰图片的文件夹</span><i class="iconfont icon-wenjianjia" />或者<span class="go-bold">图片</span>
       </p> -->
       <el-row >
-          <el-col :span="12">
+          <el-col :span="8">
             <div class="handle-button">
-              <el-button
-                type="primary"
-                class="btn-animate btn-animate__shiny"
-                @click="load_picture()">
-                加载图谱
-              </el-button>
+              <el-upload
+                ref="upload"
+                v-model:file-list="fileList"
+                action="#"
+                multiple
+                :auto-upload="false"
+              >
+                <el-button type="primary" class="btn-animate btn-animate__shiny">选取文件</el-button>
+              </el-upload>
+             
             </div>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
+            <div class="handle-button">
+                <el-button
+                  type="primary"
+                  class="btn-animate btn-animate__shiny"
+                  @click="upload_stiuation('态势推理','situation')">
+                  轨迹生成
+                </el-button>
+            </div>
+          </el-col>
+          <el-col :span="8">
             <div class="handle-button">
               <el-button
                 type="primary"
@@ -90,7 +104,7 @@
           <div
             id="sub-title"
           >
-            图谱预览<i
+            轨迹预览<i
               class="iconfont icon-dianji"
             />
           </div>
@@ -152,14 +166,14 @@
       <situation_imgShow2
         :img-arr = "img_list_2"/>
         
-      <!-- <Tabinfor>
+      <Tabinfor>
       <template #left>
         <div id="sub-title"> 相关态势预测信息<i class="iconfont icon-dianji"/> </div>
       </template>
       </Tabinfor>
       <el-divider />
       <el-table
-      :data="tableData"
+      :data="outputData"
       height="300"
       border
       style="width: 100%">
@@ -169,29 +183,73 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="action"
-        label="预测行为"
+        prop="pre_jingdu"
+        label="预测经度"
+        width="120">
+      </el-table-column>
+      <el-table-column
+        prop="pre_weidu"
+        label="预测纬度"
+        width="120">
+      </el-table-column>
+      <el-table-column
+        prop="real_jingdu"
+        label="真实经度"
+        width="120">
+      </el-table-column>
+      <el-table-column
+        prop="real_weidu"
+        label="真实纬度"
+        width="120">
+      </el-table-column>
+      <el-table-column
+        prop="dis"
+        label="haversine距离"
         width="150">
       </el-table-column>
       <el-table-column
-        prop="probability"
-        label="置信度"
-        width="100">
+        prop="flag"
+        label="是否预测正确"
+        width="120">
       </el-table-column>
+    </el-table>
+    <el-divider />
+      <el-table
+      :data="ap_data"
+      height="300"
+      border
+      style="width: 100%">
       <el-table-column
-        prop="time"
-        label="推理时间(单位:毫秒)"
+        prop="ap"
+        label="预测准确率"
         width="100">
       </el-table-column>
-    </el-table> -->
+    </el-table>
+    <Tabinfor>
+      <template #left>
+        <div id="sub-title"> 模型架构图<i class="iconfont icon-dianji"/> </div>
+      </template>
+    </Tabinfor>
+    <el-divider />
+    <div>
+      <el-image
+        ref="tableTab"
+        class="img-display"
+        :src="networksrc"
+        :fit="fit"
+        :lazy="true"
+        :preview-src-list="[networksrc]"
+        :preview-teleported="true"
+      />
+    </div>
       <Bottominfor />
     </div>
   </template>
   <script>
   import {createSrc, imgUpload,getCustomModel} from "@/api/upload";
   import {historyGetPage} from "@/api/history";
-  import {upload} from "@/utils/getUploadImg";
-  import {gettable} from "@/api/upload";
+  import {upload,upload_stiuation} from "@/utils/getUploadImg";
+  import {getSituation} from "@/api/upload";
   import situation_imgShow from '@/components/situation_imgShow'
   import situation_imgShow2 from '@/components/situation_imgShow2'
   import classification_imgShow from '@/components/classification_imgShow'
@@ -234,50 +292,54 @@
         modelPathArr:[],
         imgArr:[],
         tableData: [],
-        inputData:[{
-          id:'1',
-          timestamp: '2074293900',
-          longitude: '116.801289',
-          latitude: '39.950773',
-          height:'10000',
-          speed:'15.18338756',
-          angle:'214.6854958',
-          encode:'2009-04-15',
-          time:'00:04:06'
-        },
-        {
-          id:'2',
-          timestamp: '2074299030',
-          longitude: '136.9361255',
-          latitude: '31.38977628',
-          height:'10000',
-          speed:'15.19845853',
-          angle:'214.2785259',
-          encode:'2010101'
-        },
-        {
-          id:'3',
-          timestamp: '2074306200',
-          longitude: '136.362676',
-          latitude: '30.53955996',
-          height:'10000',
-          speed:'15.21203915',
-          angle:'213.7246856',
-          encode:'2010101'
-        },
-        {
-          id:'4',
-          timestamp: '2074315830',
-          longitude: '135.6075397',
-          latitude: '29.39286647',
-          height:'10000',
-          speed:'15.21621424',
-          angle:'213.0162978',
-          encode:'2010101'
-        }],
+        networksrc:"",
+        // inputData:[{
+        //   id:'1',
+        //   timestamp: '2074293900',
+        //   longitude: '116.801289',
+        //   latitude: '39.950773',
+        //   height:'10000',
+        //   speed:'15.18338756',
+        //   angle:'214.6854958',
+        //   encode:'2009-04-15',
+        //   time:'00:04:06'
+        // },
+        // {
+        //   id:'2',
+        //   timestamp: '2074299030',
+        //   longitude: '136.9361255',
+        //   latitude: '31.38977628',
+        //   height:'10000',
+        //   speed:'15.19845853',
+        //   angle:'214.2785259',
+        //   encode:'2010101'
+        // },
+        // {
+        //   id:'3',
+        //   timestamp: '2074306200',
+        //   longitude: '136.362676',
+        //   latitude: '30.53955996',
+        //   height:'10000',
+        //   speed:'15.21203915',
+        //   angle:'213.7246856',
+        //   encode:'2010101'
+        // },
+        // {
+        //   id:'4',
+        //   timestamp: '2074315830',
+        //   longitude: '135.6075397',
+        //   latitude: '29.39286647',
+        //   height:'10000',
+        //   speed:'15.21621424',
+        //   angle:'213.0162978',
+        //   encode:'2010101'
+        // }],
         inputData2:[],
+        outputData:[],
+        ap_data:[],
         img_list:[],
-        img_list_2:[]
+        img_list_2:[],
+        temp_name:""
       }
       
     },
@@ -309,17 +371,7 @@
       //   this.modelPathArr = res.data.data
       //   this.uploadSrc.model_path = this.modelPathArr[0]?.model_path
       // }).catch((rej)=>{})
-      this.inputData2 = []
-      this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_location/network.png"
-      this.gettable("situation").then((res) => {
-          var temp = res.data.data["imgArr"];
-          for(var i=0;i<temp.length;i++){
-            this.inputData2.push({"id":temp[i]["id"],"jingdu":temp[i]["jingdu"],"weidu":temp[i]["weidu"],"biaoshifu":temp[i]["biaoshifu"],"date":temp[i]["date"],"time":temp[i]["time"]})
-          }
-          
-        });
-        // console.log(this.inputData2)
-
+       this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/network.png"
     },
     methods: {
       imgUpload,
@@ -327,7 +379,8 @@
       historyGetPage,
       createSrc,
       upload,
-      gettable,
+      upload_stiuation,
+      getSituation,
       checkUpload() {
         this.isUpload = this.beforeImg.length !== 0;
       },
@@ -373,33 +426,46 @@
         this.isNotCut = this.$refs.cut.checked;
       },
       load_picture(){
+        var temp_name = this.fileList[0].name.replace("txt","png")
         this.img_list.push({
                 "id":1,
                 "type":"态势预测",
-                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/pic2.png"
+                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/"+temp_name
         });
         // console.log(this.img_list);
       },
       inference(){
-        var action_list = ["预警机升空","预警机飞行","战斗机升空","战斗机飞行","预警机警戒","战斗机攻击"];
-        var index = Math.round(Math.random()*(0-5) + 5);
-        // console.log(index)
-        var probability = (Math.random()*(80-96) + 96)/100;
-        // console.log(probability.toFixed(3))
-        var time = Math.round(Math.random()*(600-990) + 990);
-        this.tableData=[];
-        this.tableData.push({
-                "id":1,
-                "action":action_list[index],
-                "probability": probability.toFixed(3),
-                "time":time,
-        })
-        this.img_list_2.push({
-                "id":1,
-                "type":"态势预测",
-                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/pic1.png"
-        });
-        // console.log(this.tableData)
+        // var action_list = ["预警机升空","预警机飞行","战斗机升空","战斗机飞行","预警机警戒","战斗机攻击"];
+        // var index = Math.round(Math.random()*(0-5) + 5);
+        // // console.log(index)
+        // var probability = (Math.random()*(80-96) + 96)/100;
+        // // console.log(probability.toFixed(3))
+        // var time = Math.round(Math.random()*(600-990) + 990);
+        // this.tableData=[];
+        // this.tableData.push({
+        //         "id":1,
+        //         "action":action_list[index],
+        //         "probability": probability.toFixed(3),
+        //         "time":time,
+        // })
+        // this.inputData2 = []
+        this.getSituation("situation",this.temp_name).then((res) => {
+            var temp = res.data.data["imgArr"];
+            for(var i=0;i<temp.length;i++){
+              this.outputData.push({"id":temp[i]["id"],"pre_jingdu":temp[i]["pre_jingdu"],"pre_weidu":temp[i]["pre_weidu"],"real_jingdu":temp[i]["real_jingdu"],"real_weidu":temp[i]["real_weidu"],"dis":temp[i]["dis"],
+                                    "flag":temp[i]["flag"]})
+            }
+              this.ap_data.push({"ap":res.data.data["ap"][0]["acc"]})
+          });
+          // console.log(this.inputData2)
+          var temp_png_name = this.temp_name.replace("txt","png")
+          this.img_list_2 = []
+          this.img_list_2.push({
+                  "id":1,
+                  "type":"态势预测",
+                  "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/output/"+temp_png_name
+          });
+          console.log(temp_png_name)
       }
     },
   };

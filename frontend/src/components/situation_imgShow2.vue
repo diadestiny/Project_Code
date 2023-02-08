@@ -113,7 +113,7 @@ export default {
       line-height: 21rem;
     }
   .img-display{
-    width:31rem;
+    width:51rem;
     height: 31rem;
   }
     .img-divider{

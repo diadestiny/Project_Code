@@ -24,6 +24,35 @@ function goCompress(type,num) {
   }).catch((rej)=>{});
 }
 
+function upload_stiuation(type,funUrl){
+  if(this.fileList.length==0){
+    this.$message.error("请上传txt! ")
+  }else{
+    let formData = new FormData();
+    let _this = this;
+    for (const item of this.fileList) {
+      formData.append("files", item) || formData.append('files', item.raw);
+      formData.append("type", type);
+    }
+    this.createSrc(formData).then((res) =>{
+      this.inputData2 = []
+      var temp = res.data.data;
+          for(var i=0;i<temp.length;i++){
+            this.inputData2.push({"id":temp[i]["id"],"jingdu":temp[i]["jingdu"],"weidu":temp[i]["weidu"],"biaoshifu":temp[i]["biaoshifu"],"date":temp[i]["date"],"time":temp[i]["time"]})
+          }
+    })
+    var temp_name = this.fileList[0].name.replace("txt","png")
+    this.img_list = []
+    this.img_list.push({
+      "id":1,
+      "type":"态势预测",
+      "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/"+temp_name
+    });
+    _this.$refs.upload.clearFiles();
+    this.temp_name = this.fileList[0].name
+    this.fileList = []
+  }
+}
 function upload(type,funUrl) {
   
   if (this.fileList.length === 0) {
@@ -31,7 +60,7 @@ function upload(type,funUrl) {
   } else {
     let formData = new FormData();
     let _this = this;
-    console.log(this.fileList)
+    // console.log(this.fileList)
     for (const item of this.fileList) {
       formData.append("files", item) || formData.append('files', item.raw);
       formData.append("type", type);
@@ -92,4 +121,4 @@ function upload(type,funUrl) {
 }
 
 
-export { getUploadImg, goCompress, upload }
+export { getUploadImg, goCompress, upload,upload_stiuation }

@@ -349,6 +349,8 @@ class YOLO(object):
             if gt_dict[k]==0:
                 continue
             else:
+                if k == "sum":
+                    ap_dictionary["total"] = predict_dict[k]
                 if 1.0 * predict_dict[k] / gt_dict[k] > 1:
                     # ap_dictionary[k] = 1.0 * gt_dict[k] / predict_dict[k]
                     ap_dictionary[k] = min(1.0,1.0*predict_dict[k] / gt_dict[k])
