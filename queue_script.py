@@ -36,6 +36,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     for cuda_device in args.device_ids:
         occumpy_mem(cuda_device)
-    for _ in tqdm(range(args.time)):
-        time.sleep(1)
+    while True:
+        for _ in tqdm(range(args.time)):
+            time.sleep(1)
     print('Done')
