@@ -21,6 +21,8 @@ def upload_api():
         data = list()
         if type_ == "目标检测":
             for photo in photos_:
+                if photo.filename[0]=="_":
+                    photo.filename =  photo.filename[1:]
                 photos.save(photo, folder = 'detection',name=photo.filename[:-4] + ".")
                 file_url = '/data1/lkh/GeoView-release-0.1/backend/static/upload/detection/'+ photo.filename
                 data.append({
@@ -31,6 +33,7 @@ def upload_api():
             return jsonify(res)
         elif type_ == "孪生分类":
             if len(photos_) == 1:
+                    photos_[0].filename = photos_[0].filename.replace("_","")
                     file_url1 = '/data1/lkh/Siamese-pytorch/datasets/warships/images/'+ photos_[0].filename
                     file_url2 = '/data1/lkh/Siamese-pytorch/datasets/warships/easy/' + photos_[0].filename
                     file_url3 = '/data1/lkh/Siamese-pytorch/datasets/warships/mid/'+ photos_[0].filename
@@ -54,6 +57,8 @@ def upload_api():
             else:
                 for i in range(0,len(photos_),2):
                     # timestamp = str(time.time()).split(".")[0]
+                    photos_[i].filename = photos_[i].filename.replace("_","")
+                    photos_[i+1].filename = photos_[i+1].filename.replace("_","")
                     file_url1 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_before/'+ photos_[i].filename
                     file_url2 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/classification_after/'+ photos_[i+1].filename
                     if os.path.exists(file_url1):
@@ -75,6 +80,8 @@ def upload_api():
             return jsonify(res)
         elif type_ == '目标定位':
             for i in range(0,len(photos_),2):
+                photos_[i].filename = photos_[i].filename.replace("_","")
+                photos_[i+1].filename = photos_[i+1].filename.replace("_","")
                 file_url1 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/location_main/'+ photos_[i].filename
                 file_url2 = '/data1/lkh/GeoView-release-0.1/backend/static/upload/location_side/'+ photos_[i+1].filename
                 if os.path.exists(file_url1):
@@ -117,10 +124,12 @@ def upload_api():
                 i = i + 1
             plt_data = pd.read_csv(path, sep=',').iloc[:, 0:2].values
             # 画样本数据库
-            # plt.rcParams['font.sans-serif'] = ['STIXNonUnicode']  # 用来正常显示中文标签
-            # font = FontProperties(fname=r"/home/ruiquan/anaconda3/envs/hid/lib/python3.6/site-packages/matplotlib/mpl-data/fonts/ttf/SIMKAI.TTF", size=14)
+            # font = FontProperties(fname="/data1/lkh/GeoView-release-0.1/backend/static/test_situation/SIMKAI.TTF", size=14)
             plt.figure(figsize=(10, 8),dpi=200)
-            plt.scatter(plt_data[:, 1], plt_data[:, 0], c='r', marker='o', label='raw data')
+            # plt.rcParams['font.sans-serif'] = ['STIXNonUnicode']  # 用来正常显示中文标签
+            plt.scatter(plt_data[:, 1], plt_data[:, 0], c='r', marker='o', label='real data')
+            # plt.xlabel('纬度', fontproperties=font)
+            # plt.ylabel('经度', fontproperties=font)
             plt.legend(loc='upper left')
             plt.grid()
             plt.savefig(path.replace('txt','png'), dpi=200, bbox_inches='tight')

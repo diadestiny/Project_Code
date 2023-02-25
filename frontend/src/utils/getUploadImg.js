@@ -41,12 +41,12 @@ function upload_stiuation(type,funUrl){
             this.inputData2.push({"id":temp[i]["id"],"jingdu":temp[i]["jingdu"],"weidu":temp[i]["weidu"],"biaoshifu":temp[i]["biaoshifu"],"date":temp[i]["date"],"time":temp[i]["time"]})
           }
     })
-    var temp_name = this.fileList[0].name.replace("txt","png")
+    var tname = this.fileList[0].name.replace("txt","png")
     this.img_list = []
     this.img_list.push({
       "id":1,
       "type":"态势预测",
-      "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/"+temp_name
+      "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/"+tname
     });
     _this.$refs.upload.clearFiles();
     this.temp_name = this.fileList[0].name

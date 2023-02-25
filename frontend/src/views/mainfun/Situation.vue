@@ -204,13 +204,18 @@
       </el-table-column>
       <el-table-column
         prop="dis"
-        label="haversine距离"
+        label="距离(单位:米)"
         width="150">
       </el-table-column>
       <el-table-column
         prop="flag"
         label="是否预测正确"
         width="120">
+      </el-table-column>
+      <el-table-column
+        prop="time"
+        label="推理时间(单位:毫秒)"
+        width="200">
       </el-table-column>
     </el-table>
     <el-divider />
@@ -449,11 +454,13 @@
         //         "time":time,
         // })
         // this.inputData2 = []
+        this.outputData = []
+        this.ap_data = []
         this.getSituation("situation",this.temp_name).then((res) => {
             var temp = res.data.data["imgArr"];
             for(var i=0;i<temp.length;i++){
               this.outputData.push({"id":temp[i]["id"],"pre_jingdu":temp[i]["pre_jingdu"],"pre_weidu":temp[i]["pre_weidu"],"real_jingdu":temp[i]["real_jingdu"],"real_weidu":temp[i]["real_weidu"],"dis":temp[i]["dis"],
-                                    "flag":temp[i]["flag"]})
+                                    "flag":temp[i]["flag"],"time":temp[i]["time"]})
             }
               this.ap_data.push({"ap":res.data.data["ap"][0]["acc"]})
           });
@@ -465,7 +472,7 @@
                   "type":"态势预测",
                   "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/output/"+temp_png_name
           });
-          console.log(temp_png_name)
+          // console.log(temp_png_name)
       }
     },
   };

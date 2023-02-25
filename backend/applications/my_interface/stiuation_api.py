@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import copy
  
 # 设定为自增长
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 config=tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 session=tf.compat.v1.Session(config=config)

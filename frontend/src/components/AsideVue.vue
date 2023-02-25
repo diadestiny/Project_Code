@@ -22,7 +22,7 @@
           class="platform-title"
           style="font-size:15px;"
           @click="goShow"
-        >FHM体系目标识别和态势推理演示平台
+        >态势自主认知技术仿真验证平台
       </a>
       </div>
     </div>

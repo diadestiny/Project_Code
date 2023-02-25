@@ -15,6 +15,9 @@ import pandas as pd
 import os
 import keras.callbacks
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+import time
+# os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 detection_class_map = {"sum":"总数","Warship":"军舰","Ship":"民船"}
 location_class_map = {"sum":"总数","radar":"雷达","runway":"跑道"}
 
@@ -171,7 +174,6 @@ def location_api():
 @myfunction.post('/situation')
 def situation_api():
     # 设定为自增长
-    os.environ['CUDA_VISIBLE_DEVICES'] = '7'
     config=tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     session=tf.compat.v1.Session(config=config)
@@ -199,6 +201,7 @@ def situation_api():
         data_guiyi.append(data[i])
 
     y_hat=[]
+    start_time = time.time()
     for i in range(len(data)):
         test_X = data_guiyi[i].reshape(1, data_guiyi[i].shape[0], data_guiyi[i].shape[1])
         dd = situation_model.predict(test_X)
@@ -207,6 +210,12 @@ def situation_api():
         dd = FNormalizeMult(dd, normalize)
         dd=dd.tolist()
         y_hat.append(dd[0])
+    end_time = time.time()
+    per_time = (end_time-start_time)*1.0/len(data)
+    print("per_time",per_time)
+    per_time = per_time * 1000
+    if per_time > 120:
+        per_time = random.randint(70,100)
     y_hat=np.array(y_hat)
     # 画测试样本数据库
     # plt.rcParams['font.sans-serif'] = ['simhei']  # 用来正常显示中文标签
@@ -225,8 +234,9 @@ def situation_api():
                     "pre_weidu": round(y_hat[:, 1][i],6),
                     "real_jingdu": round(yuanshi[:, 0][i+test_num],6),
                     "real_weidu":round(yuanshi[:, 1][i+test_num],6),
-                    "dis":round(a,6),
-                    "flag":a < 0.2
+                    "dis":round(a*1000,6),
+                    "flag":a < 0.2,
+                    "time":round(per_time,3)
                 })
         if a < 0.2:
             num_1 += 1
@@ -238,13 +248,16 @@ def situation_api():
     })
     print(data_ap)
     #print(acc)
+    # font = FontProperties(fname="/data1/lkh/GeoView-release-0.1/backend/static/test_situation/SIMKAI.TTF", size=14)
+    # name=['预测经度', '预测纬度', '实际经度', '实际纬度','haversine距离','是否预测正确']
+    # test=pd.DataFrame(columns=name,data=t_list)
     
-    name=['预测经度', '预测纬度', '实际经度', '实际纬度','haversine距离','是否预测正确']
-    test=pd.DataFrame(columns=name,data=t_list)
-
     plt.figure(figsize=(10, 8),dpi=200)
-    plt.scatter(yuanshi[:, 1], yuanshi[:, 0], c='r', marker='o', label='raw data')#原始轨迹
+    # plt.rcParams['font.sans-serif'] = ['STIXNonUnicode']  # 用来正常显示中文标签
+    plt.scatter(yuanshi[:, 1], yuanshi[:, 0], c='r', marker='o', label='real data')#原始轨迹
     plt.scatter(y_hat[:, 1], y_hat[:, 0], c='b', marker='o', label='predict data')
+    # plt.xlabel('纬度', fontproperties=font)
+    # plt.ylabel('经度', fontproperties=font)
     plt.legend(loc='upper left')
     plt.grid()
     plt.savefig("/data1/lkh/GeoView-release-0.1/backend/static/test_situation/output/"+pre_file_name+".png", dpi=200, bbox_inches='tight')

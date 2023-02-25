@@ -322,6 +322,7 @@ class YOLO(object):
         f.close()
         # 获得gt
         with open(os.path.join(dir_path, "ground-truth/"+image_name_id+".txt"), "w") as new_f:
+            image_name_id = image_name_id.replace("_","")
             root = ET.parse(os.path.join("/data1/lkh/yolov5/VOCdevkit/VOC2007/Annotations/cam1/"+image_name_id+".xml")).getroot()
             for obj in root.findall('object'):
                 difficult_flag = False

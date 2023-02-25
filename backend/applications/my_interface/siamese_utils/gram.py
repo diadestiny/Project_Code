@@ -1,5 +1,5 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '2/'
+# os.environ["CUDA_VISIBLE_DEVICES"] = '2/'
 import cv2
 import numpy as np
 import torch
