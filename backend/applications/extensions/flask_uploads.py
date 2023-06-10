@@ -21,8 +21,8 @@ import os.path
 import posixpath
 
 from flask import current_app, send_from_directory, abort, url_for
-from werkzeug.datastructures import FileStorage
-from werkzeug.utils import secure_filename
+# from werkzeug.datastructures import FileStorage
+# from werkzeug.utils import secure_filename
 
 from flask import Blueprint
 
@@ -394,7 +394,8 @@ class UploadSet(object):
                 (ext in self.extensions and ext not in self.config.deny))
 
     def get_basename(self, filename):
-        return lowercase_ext(secure_filename(filename))
+        # return lowercase_ext(secure_filename(filename))
+        return lowercase_ext(filename)
 
     def save(self, storage, folder=None, name=None):
         """
@@ -410,8 +411,8 @@ class UploadSet(object):
                      `name` instead of explicitly using `folder`, i.e.
                      ``uset.save(file, name="someguy/photo_123.")``
         """
-        if not isinstance(storage, FileStorage):
-            raise TypeError("storage must be a werkzeug.FileStorage")
+        # if not isinstance(storage, FileStorage):
+        #     raise TypeError("storage must be a werkzeug.FileStorage")
 
         if folder is None and name is not None and "/" in name:
             folder, name = os.path.split(name)
@@ -434,14 +435,15 @@ class UploadSet(object):
         if not os.path.exists(target_folder):
             os.makedirs(target_folder)
         if os.path.exists(os.path.join(target_folder, basename)):
-            basename = self.resolve_conflict(target_folder, basename)
-
+            os.remove(os.path.join(target_folder, basename))
+            # basename = self.resolve_conflict(target_folder, basename)
         target = os.path.join(target_folder, basename)
         storage.save(target)
-        if folder:
-            return posixpath.join(folder, basename)
-        else:
-            return basename
+        # if folder:
+        #     return posixpath.join(folder, basename)
+        # else:
+        #     return basename
+        return target
 
     def resolve_conflict(self, target_folder, basename):
         """
@@ -474,49 +476,49 @@ def uploaded_file(setname, filename):
     return send_from_directory(config.destination, filename)
 
 
-class TestingFileStorage(FileStorage):
-    """
-    This is a helper for testing upload behavior in your application. You
-    can manually create it, and its save method is overloaded to set `saved`
-    to the name of the file it was saved to. All of these parameters are
-    optional, so only bother setting the ones relevant to your application.
-    :param stream: A stream. The default is an empty stream.
-    :param filename: The filename uploaded from the client. The default is the
-                     stream's name.
-    :param name: The name of the form field it was loaded from. The default is
-                 `None`.
-    :param content_type: The content type it was uploaded as. The default is
-                         ``application/octet-stream``.
-    :param content_length: How long it is. The default is -1.
-    :param headers: Multipart headers as a `werkzeug.Headers`. The default is
-                    `None`.
-    """
+# class TestingFileStorage(FileStorage):
+#     """
+#     This is a helper for testing upload behavior in your application. You
+#     can manually create it, and its save method is overloaded to set `saved`
+#     to the name of the file it was saved to. All of these parameters are
+#     optional, so only bother setting the ones relevant to your application.
+#     :param stream: A stream. The default is an empty stream.
+#     :param filename: The filename uploaded from the client. The default is the
+#                      stream's name.
+#     :param name: The name of the form field it was loaded from. The default is
+#                  `None`.
+#     :param content_type: The content type it was uploaded as. The default is
+#                          ``application/octet-stream``.
+#     :param content_length: How long it is. The default is -1.
+#     :param headers: Multipart headers as a `werkzeug.Headers`. The default is
+#                     `None`.
+#     """
 
-    def __init__(self,
-                 stream=None,
-                 filename=None,
-                 name=None,
-                 content_type='application/octet-stream',
-                 content_length=-1,
-                 headers=None):
-        FileStorage.__init__(
-            self,
-            stream,
-            filename,
-            name=name,
-            content_type=content_type,
-            content_length=content_length,
-            headers=None)
-        self.saved = None
+#     def __init__(self,
+#                  stream=None,
+#                  filename=None,
+#                  name=None,
+#                  content_type='application/octet-stream',
+#                  content_length=-1,
+#                  headers=None):
+#         FileStorage.__init__(
+#             self,
+#             stream,
+#             filename,
+#             name=name,
+#             content_type=content_type,
+#             content_length=content_length,
+#             headers=None)
+#         self.saved = None
 
-    def save(self, dst, buffer_size=16384):
-        """
-        This marks the file as saved by setting the `saved` attribute to the
-        name of the file it was saved to.
-        :param dst: The file to save to.
-        :param buffer_size: Ignored.
-        """
-        if isinstance(dst, string_types):
-            self.saved = dst
-        else:
-            self.saved = dst.name
+#     def save(self, dst, buffer_size=16384):
+#         """
+#         This marks the file as saved by setting the `saved` attribute to the
+#         name of the file it was saved to.
+#         :param dst: The file to save to.
+#         :param buffer_size: Ignored.
+#         """
+#         if isinstance(dst, string_types):
+#             self.saved = dst
+#         else:
+#             self.saved = dst.name

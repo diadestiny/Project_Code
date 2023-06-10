@@ -165,8 +165,27 @@
       </Tabinfor>
       <situation_imgShow2
         :img-arr = "img_list_2"/>
-        
-      <Tabinfor>
+      
+      <el-divider/>
+      <!-- <Tabinfor>
+        <template #left>
+            <div id="sub-title"> 态势预测图<i class="iconfont icon-dianji"/> </div>
+          </template>
+        </Tabinfor>
+        <el-divider />
+        <div class="gif">
+          <el-image
+            ref="tableTab"
+            class="img-display"
+            :src="gifsrc"
+            :fit="fit"
+            :lazy="true"
+            :preview-src-list="[gifsrc]"
+            :preview-teleported="true"
+          />
+        </div> -->
+
+      <Tabinfor> 
       <template #left>
         <div id="sub-title"> 相关态势预测信息<i class="iconfont icon-dianji"/> </div>
       </template>
@@ -230,13 +249,14 @@
         width="100">
       </el-table-column>
     </el-table>
+    
     <Tabinfor>
-      <template #left>
+    <template #left>
         <div id="sub-title"> 模型架构图<i class="iconfont icon-dianji"/> </div>
       </template>
     </Tabinfor>
     <el-divider />
-    <div>
+    <div >
       <el-image
         ref="tableTab"
         class="img-display"
@@ -298,6 +318,7 @@
         imgArr:[],
         tableData: [],
         networksrc:"",
+        gifsrc:"",
         // inputData:[{
         //   id:'1',
         //   timestamp: '2074293900',
@@ -376,7 +397,8 @@
       //   this.modelPathArr = res.data.data
       //   this.uploadSrc.model_path = this.modelPathArr[0]?.model_path
       // }).catch((rej)=>{})
-       this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/network.png"
+      this.networksrc = global.BACKEND_URL+ "test_situation/network.png"
+      //  this.gifsrc = global.BACKEND_URL+ "test_situation/t_zimu.gif"
     },
     methods: {
       imgUpload,
@@ -435,7 +457,7 @@
         this.img_list.push({
                 "id":1,
                 "type":"态势预测",
-                "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/"+temp_name
+                "img_path": global.BACKEND_URL+ "test_situation/"+temp_name
         });
         // console.log(this.img_list);
       },
@@ -454,6 +476,7 @@
         //         "time":time,
         // })
         // this.inputData2 = []
+        this.gifsrc = global.BACKEND_URL+ "test_situation/t_zimu.gif"
         this.outputData = []
         this.ap_data = []
         this.getSituation("situation",this.temp_name).then((res) => {
@@ -470,7 +493,7 @@
           this.img_list_2.push({
                   "id":1,
                   "type":"态势预测",
-                  "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/output/"+temp_png_name
+                  "img_path": global.BACKEND_URL+ "test_situation/output/"+temp_png_name
           });
           // console.log(temp_png_name)
       }
@@ -526,6 +549,14 @@
   }
   .el-radio /deep/{
     height: 62px;
+  }
+  .gif{
+    display: flex;
+    justify-content: center;  //弹性盒子对象在主轴上的对齐方式
+    align-items: center;      //定义flex子项在flex容器的当前行的侧轴(纵轴)方向上的对齐方式。
+    // background-color:#00a0e9;
+    // height:200px;
+
   }
   </style>
   

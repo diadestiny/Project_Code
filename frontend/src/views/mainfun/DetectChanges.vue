@@ -1000,12 +1000,12 @@ export default {
       ) {
         this.$message.error("请按照要求上传文件夹或图片！");
       } else {
-        let formData1 = new FormData();
+        let formdata3 = new FormData();
         let formData2 = new FormData();
         for (const item of this.fileList1) {
-          formData1.append("files", item) ||
-          formData1.append("files", item.raw);
-          formData1.append("type", "变化检测");
+          formdata3.append("files", item) ||
+          formdata3.append("files", item.raw);
+          formdata3.append("type", "变化检测");
         }
         for (const item of this.fileList2) {
           formData2.append("files", item) ||
@@ -1013,7 +1013,7 @@ export default {
           formData2.append("type", "变化检测");
         }
         let upload1 = new Promise((resolve, reject) => {
-            this.createSrc(formData1).then((res) => {
+            this.createSrc(formdata3).then((res) => {
               this.uploadSrc1 = res.data.data;
               resolve();
             }).catch((rej)=>{})
@@ -1158,13 +1158,13 @@ export default {
           if (this.$refs.sharpen.checked === true) {
             this.$refs.sharpen.checked = false;
           }
-          let formData1 = new FormData();
+          let formdata3 = new FormData();
           let formData2 = new FormData();
 
           for (const item of this.fileList1) {
-            formData1.append("files", item) ||
-            formData1.append("files", item.raw);
-            formData1.append("type", "变化检测");
+            formdata3.append("files", item) ||
+            formdata3.append("files", item.raw);
+            formdata3.append("type", "变化检测");
           }
 
           for (const item of this.fileList2) {
@@ -1173,7 +1173,7 @@ export default {
             formData2.append("type", "变化检测");
           }
           let upload3 = new Promise((resolve, reject) => {
-            this.createSrc(formData1).then((res) => {
+            this.createSrc(formdata3).then((res) => {
               this.uploadSrc3 = res.data.data.splice(0, 3);
               this.Img1 = this.uploadSrc3.map((item) => {
                 return global.BASEURL + item.src;
@@ -1260,13 +1260,13 @@ export default {
           this.$message.success("锐化处理");
           this.upload.prehandle = 4;
           this.mysharpen.prehandle = 4;
-          let formData1 = new FormData();
+          let formdata3 = new FormData();
           let formData2 = new FormData();
 
           for (const item of this.fileList1) {
-            formData1.append("files", item) ||
-            formData1.append("files", item.raw);
-            formData1.append("type", "变化检测");
+            formdata3.append("files", item) ||
+            formdata3.append("files", item.raw);
+            formdata3.append("type", "变化检测");
           }
 
           for (const item of this.fileList2) {
@@ -1275,7 +1275,7 @@ export default {
             formData2.append("type", "变化检测");
           }
           let upload1 = new Promise((resolve, reject) => {
-            this.createSrc(formData1).then((res) => {
+            this.createSrc(formdata3).then((res) => {
               this.sharpenSrc1 = res.data.data.splice(0, 3);
               this.Img1 = this.sharpenSrc1.map((item) => {
                 return global.BASEURL + item.src;

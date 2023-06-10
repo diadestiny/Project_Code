@@ -22,7 +22,7 @@ def featuremap_2_heatmap(feature_map):
 
     return heatmaps
 
-def draw_feature_map(features, save_dir = "/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap",heatmap_name = "heatmap",PASS_IMAGE_PATH="/data1/lkh/GeoView-release-0.1/backend/static/upload/detection/000489.bmp"):
+def draw_feature_map(features, save_dir = "./static/test_detection/heatmap",heatmap_name = "heatmap",PASS_IMAGE_PATH="./static/upload/detection/000489.bmp"):
     heatmap_str_save_path = os.path.join(save_dir,"save.txt")
     if os.path.exists(heatmap_str_save_path):
         with open(heatmap_str_save_path,"r") as f:
@@ -30,11 +30,12 @@ def draw_feature_map(features, save_dir = "/data1/lkh/GeoView-release-0.1/backen
             for name in names:
                 if name !="":
                     PASS_IMAGE_PATH = name
+                    heatmap_name = name.split('/')[-1]
                     break
         f.close()
     index=0
     img = mmcv.imread(PASS_IMAGE_PATH)
-    save_dir = "/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap"
+    save_dir = "./static/test_detection/heatmap"
     # cv2.imwrite("/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap/save.jpg", img)
     # img_shape = img_tensor.shape
     # img = img_tensor.mul(255).byte()
@@ -72,5 +73,5 @@ def draw_feature_map(features, save_dir = "/data1/lkh/GeoView-release-0.1/backen
                 # cv2.imshow("1",superimposed_img)
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
-                cv2.imwrite(os.path.join(save_dir,heatmap_name +str(index)+'.png'), superimposed_img)
+                cv2.imwrite(os.path.join(save_dir,"heatmap" +str(index)+ "_"+ heatmap_name), superimposed_img)
                 index=index+1

@@ -5,7 +5,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from applications.api import system_api
-from applications.common.scripts import init_script
+# from applications.common.scripts import init_script
 from applications.configs import config
 from applications.extensions import init_plugs
 

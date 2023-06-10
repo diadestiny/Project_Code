@@ -10,9 +10,9 @@ import torch.nn as nn
 from applications.my_interface.siamese_utils.vgg import VGG16
 import time
 import random
-from torchviz import make_dot,make_dot_from_trace
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
+# from torchviz import make_dot,make_dot_from_trace
+# from svglib.svglib import svg2rlg
+# from reportlab.graphics import renderPM
 import os
 
 #---------------------------------------------------#
@@ -25,9 +25,9 @@ class Siamese_config(object):
         #   使用自己训练好的模型进行预测一定要修改model_path
         #   model_path指向logs文件夹下的权值文件
         #-----------------------------------------------------#
-        "model_path"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/best_epoch_weights.pth',
-        "model_path_2"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/ep050-loss0.699-val_loss0.611.pth',
-        "model_path_3"        : '/data1/lkh/Siamese-pytorch/test_warship_logs/ep080-loss0.594-val_loss0.408.pth',
+        "model_path"        : './model/classification1.pth',
+        "model_path_2"        : './model/classification2.pth',
+        "model_path_3"        : './model/classification3.pth',
         #-----------------------------------------------------#
         #   输入图片的大小。
         #-----------------------------------------------------#
@@ -77,6 +77,7 @@ class Siamese_config(object):
         self.heat_model = VGG16(True, 3)
         model_dict = torch.load(self.model_path, map_location=device)
         self.model.load_state_dict(model_dict)
+        torch.cuda.empty_cache()
         temp_dict = {}
         for k in model_dict.keys():
             if "vgg" in k:
@@ -129,6 +130,7 @@ class Siamese_config(object):
     #   检测图片
     #---------------------------------------------------#
     def detect_image(self, image_1, image_2,heatmap_path):
+        torch.cuda.empty_cache()
         print(heatmap_path)
         #---------------------------------------------------------#
         #   在这里将图像转换成RGB图像，防止灰度图在预测时报错。
@@ -253,18 +255,18 @@ class Siamese(nn.Module):
 
 
 model_config = Siamese_config()
-dir_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_show/"
-def generate_detction_network_pic(model,net_pic_name,w,h):
-    inp_tensor=torch.ones(size=(3,3,w,h),requires_grad=True)
-    out=model(inp_tensor)
-    graph=make_dot(out,params=dict(list(model.named_parameters()) + [('x', inp_tensor)]))  # 生成计算图结构表示
-    graph.render(filename=dir_path+net_pic_name,view=False,format='svg')  # 将源码写入文件，并对图结构进行渲染
-    drawing = svg2rlg(os.path.join(dir_path,net_pic_name+".svg"))
-    renderPM.drawToFile(drawing, os.path.join(dir_path,net_pic_name+".png"), fmt='PNG')
+dir_path = "./static/test_show/"
+# def generate_detction_network_pic(model,net_pic_name,w,h):
+#     inp_tensor=torch.ones(size=(3,3,w,h),requires_grad=True)
+#     out=model(inp_tensor)
+#     graph=make_dot(out,params=dict(list(model.named_parameters()) + [('x', inp_tensor)]))  # 生成计算图结构表示
+#     graph.render(filename=dir_path+net_pic_name,view=False,format='svg')  # 将源码写入文件，并对图结构进行渲染
+#     drawing = svg2rlg(os.path.join(dir_path,net_pic_name+".svg"))
+#     renderPM.drawToFile(drawing, os.path.join(dir_path,net_pic_name+".png"), fmt='PNG')
 
 def siamese_classification(image_1,image_2):
     image_name_id = image_1.split("/")[-1][:-4]
-    temp_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap/heatmap_"
+    temp_path = "./static/test_show/heatmap/heatmap_"
     if "easy" in image_2:
         temp_path = temp_path.replace('/heatmap/','/heatmap_easy/')
     elif "mid" in image_2:

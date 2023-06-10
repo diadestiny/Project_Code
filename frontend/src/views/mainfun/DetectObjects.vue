@@ -346,7 +346,7 @@ export default {
     }
   },
   created() {
-    this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/network.png"
+    this.networksrc = global.BACKEND_URL+ "test_detection/network.png"
   },
   methods: {
     getImgArrayBuffer,
@@ -414,8 +414,8 @@ export default {
             this.analyse_img_list.push({
               "id":1,
               "type":"目标检测",
-              "heatmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/heatmap/heatmap3_"+fname,
-              // "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_detection/network.png",
+              "heatmap": global.BACKEND_URL+ "test_detection/heatmap/heatmap3_"+fname,
+              // "netmap": global.BACKEND_URL+ "test_detection/network.png",
             });
         
         // console.log(this.img_list);

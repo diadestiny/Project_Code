@@ -220,7 +220,7 @@ def Init_Setting():
 
 
 if __name__ == "__main__":
-    imgs_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_show/000394.png"
+    imgs_path = "./static/test_show/000394.png"
     model = Init_Setting()
     target_layers = [model.features[-1]]
     img, data = image_proprecess(imgs_path)
@@ -238,4 +238,4 @@ if __name__ == "__main__":
     plt.xticks()
     plt.yticks()
     plt.axis('off')
-    plt.savefig("/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap.png")
+    plt.savefig("./static/test_show/heatmap.png")

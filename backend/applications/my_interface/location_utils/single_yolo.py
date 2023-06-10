@@ -134,13 +134,13 @@ class Single_YOLO(object):
         #   验证集损失较低不代表mAP较高，仅代表该权值在验证集上泛化性能较好。
         #   如果出现shape不匹配，同时要注意训练时的model_path和classes_path参数的修改
         #--------------------------------------------------------------------------#
-        "model_path"        : '/data1/lkh/yolov5/new_single_logs/ep040-loss0.088-val_loss0.079.pth',
-        "classes_path"      : '/data1/lkh/yolov5/model_data/voc_classes.txt',
+        "model_path"        : './model/side_location.pth',
+        "classes_path"      : './model_data/voc_classes.txt',
         #---------------------------------------------------------------------#
         #   anchors_path代表先验框对应的txt文件，一般不修改。
         #   anchors_mask用于帮助代码找到对应的先验框，一般不修改。
         #---------------------------------------------------------------------#
-        "anchors_path"      : '/data1/lkh/yolov5/model_data/yolo_anchors.txt',
+        "anchors_path"      : './model_data/yolo_anchors.txt',
         "anchors_mask"      : [[6, 7, 8], [3, 4, 5], [0, 1, 2]],
         #---------------------------------------------------------------------#
         #   输入图片的大小，必须为32的倍数。
@@ -225,14 +225,14 @@ class Single_YOLO(object):
     #---------------------------------------------------#
     #   检测图片
     #---------------------------------------------------#
-    def detect_image(self, image, image_name_id,crop = False, count = False,heatmap_save_path="/data1/lkh/GeoView-release-0.1/backend/static/test_location/heatmap_side/"):
+    def detect_image(self, image, image_name_id,crop = False, count = False,heatmap_save_path="./static/test_location/heatmap_side/"):
         import matplotlib.pyplot as plt
         def sigmoid(x):
             y = 1.0 / (1.0 + np.exp(-x))
             return y
         gt_dict = {'sum':0,'radar':0,'runway':0}
         predict_dict = {'sum':0,'radar':0,'runway':0}
-        dir_path = "/data1/lkh/GeoView-release-0.1/backend/static/test_location"
+        dir_path = "./static/test_location"
         start_time = time.time()
         #---------------------------------------------------#
         #   计算输入图片的高和宽
@@ -319,7 +319,7 @@ class Single_YOLO(object):
         # 获得gt
         with open(os.path.join(dir_path, "ground-truth/"+image_name_id+".txt"), "w") as new_f:
             image_name_id = image_name_id.replace("_","")
-            root = ET.parse(os.path.join("/data1/lkh/yolov5/VOCdevkit/VOC2007/Annotations/cam1/"+image_name_id+".xml")).getroot()
+            root = ET.parse(os.path.join("./static/location_dataset_cam1_xml/"+image_name_id+".xml")).getroot()
             for obj in root.findall('object'):
                 difficult_flag = False
                 if obj.find('difficult')!=None:
@@ -344,7 +344,7 @@ class Single_YOLO(object):
         #---------------------------------------------------------#
         #   设置字体与边框厚度
         #---------------------------------------------------------#
-        font        = ImageFont.truetype(font='/data1/lkh/yolov5/model_data/simhei.ttf', size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+        font        = ImageFont.truetype(font='./model_data/simhei.ttf', size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
         thickness   = int(max((image.size[0] + image.size[1]) // np.mean(self.input_shape), 1))
         #---------------------------------------------------------#
         #   计数
@@ -429,7 +429,7 @@ class Single_YOLO(object):
             draw.text(text_origin, str(label,'UTF-8'), fill=(0, 0, 0), font=font)
             del draw
             continue
-        # ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='/data1/lkh/GeoView-release-0.1/backend/static/test_location')
+        # ap,ap_dict = get_map(0.75,False, image_name_id,score_threhold = 0.5,path='./static/test_location')
         # print("end",ap_dict)
         return image,res_data,round(total_time,3)*1000,ap_dictionary
 
@@ -534,43 +534,6 @@ class Single_YOLO(object):
         print("Save to the " + heatmap_save_path)
         plt.show()
 
-    def convert_to_onnx(self, simplify, model_path):
-        import onnx
-        self.generate(onnx=True)
-
-        im                  = torch.zeros(1, 3, *self.input_shape).to('cpu')  # image size(1, 3, 512, 512) BCHW
-        input_layer_names   = ["images"]
-        output_layer_names  = ["output"]
-        
-        # Export the model
-        print(f'Starting export with onnx {onnx.__version__}.')
-        torch.onnx.export(self.net,
-                        im,
-                        f               = model_path,
-                        verbose         = False,
-                        opset_version   = 12,
-                        training        = torch.onnx.TrainingMode.EVAL,
-                        do_constant_folding = True,
-                        input_names     = input_layer_names,
-                        output_names    = output_layer_names,
-                        dynamic_axes    = None)
-
-        # Checks
-        model_onnx = onnx.load(model_path)  # load onnx model
-        onnx.checker.check_model(model_onnx)  # check onnx model
-
-        # Simplify onnx
-        if simplify:
-            import onnxsim
-            print(f'Simplifying with onnx-simplifier {onnxsim.__version__}.')
-            model_onnx, check = onnxsim.simplify(
-                model_onnx,
-                dynamic_input_shape=False,
-                input_shapes=None)
-            assert check, 'assert check failed'
-            onnx.save(model_onnx, model_path)
-
-        print('Onnx model save as {}'.format(model_path))
 
     def get_map_txt(self, image_id, image, class_names, map_out_path):
         f = open(os.path.join(map_out_path, "detection-results/"+image_id+".txt"), "w", encoding='utf-8') 

@@ -10,7 +10,7 @@ module.exports = defineConfig({
     host: config["host"]["frontend"],
     port: config["port"]["frontend"], // 端口
   },
-  
+  publicPath: './'
   // transpileDependencies: ['@arcgis']
 })
 

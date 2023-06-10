@@ -1,0 +1,19 @@
+# AP and precision/recall per class
+0.00% = radar AP 
+ Precision: ['0.00']
+ Recall :['0.00']
+
+0.00% = runway AP 
+ Precision: []
+ Recall :[]
+
+
+# mAP of all classes
+mAP = 0.00%
+
+# Number of ground-truth objects per class
+radar: 1
+runway: 1
+
+# Number of detected objects per class
+radar: 1 (tp:0, fp:1)

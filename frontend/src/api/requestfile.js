@@ -7,6 +7,7 @@ export function requestfile(config) {
   const instance = axios.create({
     // timeout: 5000,
     baseURL: global.BASEURL,
+    BACKEND_URL: global.BACKEND_URL,
     transformRequest: [function(data, headers) {
         // 去除post请求默认的Content-Type
         delete headers.post['Content-Type']

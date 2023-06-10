@@ -403,7 +403,7 @@ export default {
     //   this.modelPathArr = res.data.data
     //   this.uploadSrc.model_path = this.modelPathArr[0]?.model_path
     // }).catch((rej)=>{})
-    this.networksrc = global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/network/network.png"
+    this.networksrc = global.BACKEND_URL+ "test_show/network/network.png"
   },
   methods: {
     imgUpload,
@@ -462,10 +462,10 @@ export default {
         this.analyse_img_list.push({
                 "id":1,
                 "type":"xxxx",
-                "heatmap1": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap_easy/heatmap_"+fname,
-                "heatmap2": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap_mid/heatmap_"+fname,
-                "heatmap3": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/heatmap_hard/heatmap_"+fname,
-                // "netmap": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_show/cnn.png",
+                "heatmap1": global.BACKEND_URL+ "test_show/heatmap_easy/heatmap_"+fname,
+                "heatmap2": global.BACKEND_URL+ "test_show/heatmap_mid/heatmap_"+fname,
+                "heatmap3": global.BACKEND_URL+ "test_show/heatmap_hard/heatmap_"+fname,
+                // "netmap": global.BACKEND_URL+ "test_show/cnn.png",
         });
         // console.log(this.img_list);
       },

@@ -48,5 +48,5 @@ if __name__ == '__main__':
                    if config["host"]["backend"] != "0.0.0.0" else "127.0.0.1",
                    config["baidu_map"]["access_key"]))
     print(config["host"]["backend"],config["port"]["backend"])
-    app.run(host=config["host"]["backend"], port=config["port"]["backend"])
+    app.run(host=config["host"]["backend"], port=config["port"]["backend"],debug=True, use_reloader=False)
     

@@ -5,11 +5,11 @@ import operator
 import os
 import shutil
 import sys
-try:
-    from pycocotools.coco import COCO
-    from pycocotools.cocoeval import COCOeval
-except:
-    pass
+# try:
+#     from pycocotools.coco import COCO
+#     from pycocotools.cocoeval import COCOeval
+# except:
+#     pass
 import cv2
 import matplotlib
 matplotlib.use('Agg')
@@ -894,33 +894,33 @@ def preprocess_dr(dr_path, class_names):
             results.append(result)
     return results
  
-def get_coco_map(class_names, path):
-    GT_PATH     = os.path.join(path, 'ground-truth')
-    DR_PATH     = os.path.join(path, 'detection-results')
-    COCO_PATH   = os.path.join(path, 'coco_eval')
+# def get_coco_map(class_names, path):
+#     GT_PATH     = os.path.join(path, 'ground-truth')
+#     DR_PATH     = os.path.join(path, 'detection-results')
+#     COCO_PATH   = os.path.join(path, 'coco_eval')
 
-    if not os.path.exists(COCO_PATH):
-        os.makedirs(COCO_PATH)
+#     if not os.path.exists(COCO_PATH):
+#         os.makedirs(COCO_PATH)
 
-    GT_JSON_PATH = os.path.join(COCO_PATH, 'instances_gt.json')
-    DR_JSON_PATH = os.path.join(COCO_PATH, 'instances_dr.json')
+#     GT_JSON_PATH = os.path.join(COCO_PATH, 'instances_gt.json')
+#     DR_JSON_PATH = os.path.join(COCO_PATH, 'instances_dr.json')
 
-    with open(GT_JSON_PATH, "w") as f:
-        results_gt  = preprocess_gt(GT_PATH, class_names)
-        json.dump(results_gt, f, indent=4)
+#     with open(GT_JSON_PATH, "w") as f:
+#         results_gt  = preprocess_gt(GT_PATH, class_names)
+#         json.dump(results_gt, f, indent=4)
 
-    with open(DR_JSON_PATH, "w") as f:
-        results_dr  = preprocess_dr(DR_PATH, class_names)
-        json.dump(results_dr, f, indent=4)
-        if len(results_dr) == 0:
-            print("未检测到任何目标。")
-            return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#     with open(DR_JSON_PATH, "w") as f:
+#         results_dr  = preprocess_dr(DR_PATH, class_names)
+#         json.dump(results_dr, f, indent=4)
+#         if len(results_dr) == 0:
+#             print("未检测到任何目标。")
+#             return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    cocoGt      = COCO(GT_JSON_PATH)
-    cocoDt      = cocoGt.loadRes(DR_JSON_PATH)
-    cocoEval    = COCOeval(cocoGt, cocoDt, 'bbox') 
-    cocoEval.evaluate()
-    cocoEval.accumulate()
-    cocoEval.summarize()
+#     cocoGt      = COCO(GT_JSON_PATH)
+#     cocoDt      = cocoGt.loadRes(DR_JSON_PATH)
+#     cocoEval    = COCOeval(cocoGt, cocoDt, 'bbox') 
+#     cocoEval.evaluate()
+#     cocoEval.accumulate()
+#     cocoEval.summarize()
 
-    return cocoEval.stats
+#     return cocoEval.stats

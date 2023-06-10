@@ -46,11 +46,12 @@ function upload_stiuation(type,funUrl){
     this.img_list.push({
       "id":1,
       "type":"态势预测",
-      "img_path": global.BASEURL+"/data1/lkh/GeoView-release-0.1/backend/static/test_situation/"+tname
+      "img_path": global.BACKEND_URL+ "test_situation/"+tname
     });
     _this.$refs.upload.clearFiles();
     this.temp_name = this.fileList[0].name
     this.fileList = []
+    // this.gifsrc = global.BACKEND_URL+ "test_situation/t.gif"
   }
 }
 function upload(type,funUrl) {

@@ -143,6 +143,7 @@ class CSPDarknet(nn.Module):
             }[backbone]
             checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
             self.load_state_dict(checkpoint, strict=False)
+            torch.cuda.empty_cache()
             print("Load weights from ", url.split('/')[-1])
             
     def forward(self, x):

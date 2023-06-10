@@ -4,7 +4,7 @@ import uuid
 from applications.common.utils.http import fail_api
 from applications.extensions.init_upload import photos
 myfunction = Blueprint('myfunction', __name__, url_prefix='/api/myfunction')
-from applications.interface.utils import get_model_info
+# from applications.interface.utils import get_model_info
 from applications.common.utils.http import fail_api, success_api, table_api
 from applications.my_interface.detection import deteciton_demo
 from applications.my_interface.siamese import siamese_classification
@@ -186,15 +186,15 @@ def situation_api():
     pre_file_name = filename.replace(".txt","")
     test_num = 6
     per_num = 1
-    txt_path = '/data1/lkh/GeoView-release-0.1/backend/static/test_situation/'+filename
+    txt_path = './static/test_situation/'+filename
     yuanshi=pd.read_csv(txt_path, sep=',').iloc[:, 0:2].values
     ex_data = pd.read_csv(txt_path, sep=',').iloc[:, 0:2].values  #原始数据
     data, dataY = data_set(ex_data, test_num)
     data.dtype = 'float64'
     y = dataY
-    situation_model = load_model("/data1/lkh/GeoView-release-0.1/backend/model/"+pre_file_name+".h5")
+    situation_model = load_model("./model/"+pre_file_name+".h5")
     # #归一化
-    normalize = np.load("/data1/lkh/GeoView-release-0.1/backend/model/"+pre_file_name+".npy")
+    normalize = np.load("./model/"+pre_file_name+".npy")
     data_guiyi=[]
     for i in range (len(data)):
         data[i]=list(NormalizeMultUseData(data[i], normalize))
@@ -248,7 +248,7 @@ def situation_api():
     })
     print(data_ap)
     #print(acc)
-    # font = FontProperties(fname="/data1/lkh/GeoView-release-0.1/backend/static/test_situation/SIMKAI.TTF", size=14)
+    # font = FontProperties(fname="./static/test_situation/SIMKAI.TTF", size=14)
     # name=['预测经度', '预测纬度', '实际经度', '实际纬度','haversine距离','是否预测正确']
     # test=pd.DataFrame(columns=name,data=t_list)
     
@@ -260,11 +260,11 @@ def situation_api():
     # plt.ylabel('经度', fontproperties=font)
     plt.legend(loc='upper left')
     plt.grid()
-    plt.savefig("/data1/lkh/GeoView-release-0.1/backend/static/test_situation/output/"+pre_file_name+".png", dpi=200, bbox_inches='tight')
+    plt.savefig("./static/test_situation/output/"+pre_file_name+".png", dpi=200, bbox_inches='tight')
     plt.clf()
 
     #print(test)
-    # test.to_csv('/data1/lkh/GeoView-release-0.1/backend/static/test_situation/'+pre_file_name+".csv",encoding='gbk')
+    # test.to_csv('./static/test_situation/'+pre_file_name+".csv",encoding='gbk')
 
     res = {"msg": "上传成功", "code": 0, "success": True, "data":{'imgArr':data_list,'ap':data_ap}}
     return jsonify(res)
